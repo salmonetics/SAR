@@ -1,0 +1,1272 @@
+<html lang="en">
+<head>
+    <title>SAR Browser</title>
+
+    <meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="/script/dc.js/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/script/dc.js/dc.css"/>
+	<script src="/script/jquery-1.12.2.min.js"></script>
+	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/script/dc.js/d3.js"></script>
+	<!--<script src="//d3js.org/topojson.v1.min.js"></script>-->
+	<script type="text/javascript" src="/script/dc.js/colorbrewer.js"></script>
+	<script type="text/javascript" src="/script/crossfilter.min.js"></script>
+	<script type="text/javascript" src="/script/dc.js/dc.js.2.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css">	
+	<!--
+	<script type="text/javascript" src="SitesBasins.js"></script>
+	<script type="text/javascript" src="CrossTrack4c.js"></script>
+	-->
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
+  integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
+  crossorigin=""/>
+  <!--<link rel="stylesheet" href="/script/dvf.css" type="text/css" media="screen"/>-->
+	<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
+  integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
+  crossorigin=""></script>
+  
+  <script src="https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.bundled.js"></script>
+  
+  <script src="https://unpkg.com/leaflet.markercluster@1.3.0/dist/leaflet.markercluster.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.css"></link>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.Default.css"></link>
+ 
+
+  <!--<script type="text/javascript" src="/script/leaflet-dvf.js"></script>-->
+  <script type="text/javascript" src="map_utils.js"></script>
+	<style>
+	.uparrow{
+		font-size: 14;
+		font-weight: bold;
+		color: green;
+		cursor: pointer;
+		border: 2px solid green;
+	}
+	.downarrow{
+		font-size: 14;
+		font-weight: bold;
+		color: red;
+		cursor: pointer;
+		border: 2px solid red;
+	}	
+	.popuptable{
+		font-size: 12;
+	}
+	#chart-year .x.axis text {
+		text-anchor: end !important;;
+		transform: rotate(-45deg);
+		font-size: 12;
+	}
+	
+	#gallery .x.axis text {
+		text-anchor: end !important;;
+		transform: rotate(-45deg);
+		font-size: 12;
+	}	
+	
+	#redds-year .x.axis text {
+		text-anchor: end !important;;
+		transform: rotate(-45deg);
+		font-size: 12;
+	}
+	
+	.leaflet-popup-content { width:500px; }	
+	img.leaflet-tile{
+		pointer-events: none;
+	}
+	.action_marker{
+		pointer-events: all;
+		cursor: pointer;
+	}	
+	#leafmap{
+		width: 800px;
+		height: 700px;	
+	}
+	
+	.dataicon{
+		width: 200px;
+		height: 200px;	
+	}
+
+	.damicon i{
+		width: 6px;
+		height: 6px;
+		float: left;
+		margin-right: 5px;
+	}
+
+	.wicon i{
+		width: 10px;
+		height: 10px;
+		float: left;
+		margin-right: 5px;
+	}
+
+	.wtext{
+		font-size: 15px
+	}
+	
+	.control {margin:5px;}
+	#datarow {
+		height: 300px;
+		overflow: scroll;
+	}
+
+
+	#spinner * { 
+		filter: none; 
+		-moz-opacity: 100%; 
+		position: absolute;
+		top: 200px;
+		left: 650px;
+	}
+		
+div.tooltip {   
+  position: absolute;           
+  text-align: left;                            
+  padding: 2px;             
+  font: 16px sans-serif;        
+  background: #fff;   
+  border: 0px;      
+  border-radius: 8px;           
+  pointer-events: none;         
+}
+
+svg	{ overflow: hidden; }
+	
+	table {
+	margin: 10px;
+	padding-top: 2px;
+    padding-right: 10px;
+    padding-bottom: 2px;
+    padding-left: 10px;
+	}
+	
+.dc-table-label {
+font-weight: bold;
+}
+
+.header th {
+text-align: center;	
+}
+
+.tiptable {
+	font: 12px sans-serif;
+}
+
+.axis path, .axis line {
+    fill: none;
+    shape-rendering: crispedges;
+    stroke: #000000;
+}
+.grid .tick {
+    stroke: grey;
+    opacity: 0.5 !important;
+}
+.bar rect {
+        fill: #ed1e79;
+    }
+
+    .bar text.value {
+        fill: black;
+    }
+    circle {
+    fill: none;
+    stroke: black; 
+    stroke-width: 1;
+}
+
+.brush .extent {
+  stroke: #fff;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}
+
+text {
+  cursor: default;
+}
+
+path.line:hover{
+	stroke-width: 2px;
+}
+
+.background path {
+  fill: none;
+  stroke: #ddd;
+  shape-rendering: crispEdges;
+}
+
+.foreground path {
+  fill: none;
+  stroke: steelblue;
+}
+
+.brush .extent {
+  fill-opacity: .3;
+  stroke: #fff;
+  shape-rendering: crispEdges;
+}
+
+.axis line,
+.axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+  cursor: move;
+}
+
+input[type=range],
+	::-moz-range-track,
+	 ::-ms-track {
+	 -webkit-appearance: none;
+	 background-color: 3f91e5;
+	 width: 400px;
+	 height:40px;
+}
+
+input.vertical {
+	-webkit-appearance: slider-vertical;
+	writing-mode: bt-lr;
+}
+	</style>
+</head>
+<body>
+<div class="container-fluid">
+<div class="row">
+<div class="span12">
+<h2>SAR Browser</h2>
+<div id="dc-data-count">
+        <span class="filter-count"></span> selected out of <span class="total-count"></span> rows&nbsp;<span><a href="javascript:dc.filterAll(); redrawAll();">(reset all)</a></span>
+    </div>
+</div>
+</div>
+<div class="row">
+<div class="span5">
+  <ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#filter1">What Fish</a></li>
+	<li><a data-toggle="tab" href="#filter2">Where Released</a></li>
+  </ul>
+
+<div class="tab-content">
+
+    <div id="filter1" class="tab-pane fade in active">
+		<div id="chart-species" class="control">
+			<div><strong>Species</strong>
+			<a class="reset" href="javascript:species.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+			</div>
+		</div>	
+		<br>
+
+		<div id="chart-rtpath" class="control">
+			<div><strong>Point to Point</strong>
+			<a class="reset" href="javascript:rtpath.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+			</div>
+		</div>	
+		<br>		
+		<div id="chart-rtype" class="control">
+			<div><strong>Rear Type</strong>
+			<a class="reset" href="javascript:rtype.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+			</div>
+		</div>
+		<br>
+		<div id="chart-run" class="control">
+			<div><strong>Run</strong>
+			<a class="reset" href="javascript:run.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+			</div>
+		</div>	
+		<br>		
+		<div id="chart-transport" class="control">
+			<div><strong>Transported</strong>
+			<a class="reset" href="javascript:transport.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+			</div>
+		</div>
+		
+	</div>
+	
+	<div id="filter2" class="tab-pane fade">
+		<div id="chart-basin" class="control">
+			<div><strong>Basin</strong>
+			<a class="reset" href="javascript:basin.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+			</div>
+		</div>
+		<br>
+		<div id="chart-subbasin" class="control">
+			<div><strong>Subbasin</strong>
+			<a class="reset" href="javascript:subbasin.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+			</div>
+		</div>
+		<br>	
+		<div id="chart-relsite" class="control">
+			<div><strong>Release Site</strong>
+			<a class="reset" href="javascript:relsite.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+			</div>
+		</div>		
+		<br>	
+	</div>
+	
+    <div id="filter4" class="tab-pane fade">
+		<div id="redds-year" class="control">
+			<div><strong>Redd Survey Year</strong>
+			<a class="reset" href="javascript:params.redds.year.filterAll();dc.redrawAll('redds');" style="display: none;">reset</a>
+			</div>
+		</div>	
+		<div id="trt-pop" class="control">
+			<div><strong>Redd TRT-Population</strong>
+			<a class="reset" href="javascript:params.redds.pop.filterAll();dc.redrawAll('redds');" style="display: none;">reset</a>
+			</div>
+		</div>		
+	</div>	
+</div>	
+</div>
+
+<div class="span14">
+
+  <ul class="nav nav-tabs">
+  	<li class="active"><a data-toggle="tab" href="#filter20">Annual SAR Estimates</a></li>
+    <li><a data-toggle="tab" href="#filter10">Map</a></li>
+	<li><a data-toggle="tab" href="#filter30">Spawner Estimates</a></li>
+	<li><a data-toggle="tab" href="#filter40">Gallery</a></li>
+  </ul>
+
+<div class="tab-content">
+<div id="filter10" class="tab-pane fade">
+		<table cellpadding="3">
+		<tr><th align="left" class="dropdown_text">Marker Scale/Color</th>
+		<td align="left" colspan="2"><input id="circlesize_slider" type = "range" min ="1" max="100" step ="1" value ="20"/>&nbsp;<input id='circle_colorpicker'/></td>
+		<th class="dropdown_text" align="right" colspan="2">River Coloring
+		<select id="riverstyle_options" class="dropdown_text" onchange="styleRivers(this)">
+		<option value="styleRiverBlue" id="styleRiverBlue">Default Blue</option>
+		<option value="styleRiverTemp" id="styleRiverTemp">Mean Aug Temp C</option>
+		<option value="styleRiverTemp2011" id="styleRiverTemp2011">Aug Temp Rating</option>
+		<option value="styleRiverTemp2040" id="styleRiverTemp2040">2040 Temp Rating</option>
+		<option value="styleRiverElevation" id="styleRiverElevation">Elevation</option>
+		<option value="styleRiverCanopy" id="styleRiverCanopy">Canopy</option>
+		<option value="styleRiverVelocity" id="styleRiverVelocity">Stream Velocity</option>
+		<option value="styleRiverSlope" id="styleRiverSlope">Stream Slope</option>
+		<option value="styleRiverPrecip" id="styleRiverPrecip">Precipitation</option>
+		</select>
+		</th>
+		</tr>
+		</table>
+	<div id="leafmap">
+	</div>
+</div>
+
+<div id="filter20" class="tab-pane fade in active">
+		<div id="chart-year" class="control">
+		<div><input type="checkbox" class="saltbox" checked onClick=toggleSalt(this,'salt0')>NoSalt</input>&nbsp;&nbsp;<input type="checkbox" class="saltbox" checked onClick=toggleSalt(this,'salt1')>OneSalt</input>&nbsp;&nbsp;<input type="checkbox" class="saltbox" checked onClick=toggleSalt(this,'salt2')>TwoSalt</input>&nbsp;&nbsp;<input type="checkbox" class="saltbox" checked onClick=toggleSalt(this,'salt3')>ThreeSalt</input>&nbsp;&nbsp;<input type="checkbox" class="saltbox" checked onClick=toggleSalt(this,'salt4')>FourSalt</input>&nbsp;
+		<a class="reset" href="javascript:year.filterAll();dc.redrawAll();" style="display: none;">reset&nbsp;</a><input id="confidence_display" type="checkbox" onclick="params.showConfidence=this.checked;year.redraw()">Show Confidence</input>&nbsp;<input id="sar_display" type="checkbox" onclick="params.showBarTotals=this.checked;year.redraw()">Show SAR Values</input>
+		<br>SAR Scale:&nbsp;<span class="downarrow" onclick="year.y().domain([0,year.y().domain()[1]+.5]);year.render();year.redraw()">&nbsp;&#x2c5;&nbsp;</span>&nbsp;<span class="uparrow" onclick="year.y().domain([0,year.y().domain()[1]-1]);year.render();year.redraw()">&nbsp;&#x2c4&nbsp;</span>
+		</div>
+	</div>
+	<br>
+	<input id="clone_text" type="text" style="width: 600px;"></input><input type="button" onclick="cloneSVG(year,'gallery');" name="Save" value="Save"></input>
+</div>
+<div id="filter30" class="tab-pane fade">
+<iframe src="http://www.onefishtwofish.net/sps/CAXViewer2stacked.html" height="1500" width="1000" frameBorder="0" scrolling="no"></iframe>
+</div>
+<div id="filter40" class="tab-pane fade">
+	<div id="gallery">
+	</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="row" id="loc_info">
+
+</div>
+
+</div>
+
+
+
+<div id="spinner"><img src="/images/spinner.gif"></div>
+</body>
+<script>
+$("#barsize_slider").on("input", function(){
+	params.bar_width = +this.value;
+	redrawAll();
+});
+
+$("#circlesize_slider").on("input", function(){
+	params.circle_size.scale = +this.value/20;
+	addSurveyMarkers();
+});
+
+$("#circle_colorpicker").spectrum({
+    color: "#00f",
+	hide: function(tinycolor) {
+		params.circle_color = "#" + tinycolor.toHex();
+		addSurveyMarkers();
+	},
+});
+d3.selectAll("div.sp-replacer").style("height",12)
+d3.selectAll("div.sp-preview").style("height",12)
+
+var ndx,filtered_count,total_count;
+
+var params = {
+	count: "count",
+	click_mode: "info",
+	circle_color: "blue",
+	bar_width: 10,
+	color_coding: "none",
+	selectFish: function(d){return ""},
+	addedFilters: [],
+	timeseries: {
+		svg:{
+			width: 800, 
+			height: 700,
+			margins: {top: 10, bottom: 40, left: 200, right: 40}
+		},
+		huclevel: "Huc4",
+		timestep: "SurveyDate"
+	},
+	salt:{
+		salt0: true,
+		salt1: true,
+		salt2: true,
+		salt3: true,
+		salt4: true,
+	}
+};
+	
+params.round = function(number, precision) {
+    var factor = Math.pow(10, precision);
+    var tempNumber = number * factor;
+    var roundedTempNumber = Math.round(tempNumber);
+    return roundedTempNumber / factor;
+};
+
+var toggleSalt = function(box,s){
+	params.salt[s]=box.checked;
+	year.render()
+	year.redraw()
+}
+
+var tipdiv = d3.select("body").append("div")   
+    .attr("class", "tooltip")               
+    .style("opacity", 0);		
+
+var min_date,max_date,mindateDim,maxdateDim;
+
+
+var colorCircle = function(site){
+	//console.log(site.count/Object.keys(site.surveys).length)
+	return params.circle_color;
+}
+
+
+var dateFormat = d3.time.format("%m/%d/%Y");
+ 
+var getGroup = function(dim){
+	//console.log("group " + sum )
+	//sum++
+	var group = dim.group().reduce(
+        function (p, v) {
+            p.salt0 += +v.Salt0
+			p.salt1 += +v.Salt1
+			p.salt2 += +v.Salt2
+			p.salt3 += +v.Salt3
+			p.salt4 += +v.Salt4
+			p.total += +v.CountOut
+            return p;
+        },
+
+        function (p, v) {
+            p.salt0 -= +v.Salt0
+			p.salt1 -= +v.Salt1
+			p.salt2 -= +v.Salt2
+			p.salt3 -= +v.Salt3
+			p.salt4 -= +v.Salt4
+			p.total -= +v.CountOut
+			if(p.salt0 < 0)p.salt0=0
+			if(p.salt1 < 0)p.salt1=0
+			if(p.salt2 < 0)p.salt2=0
+			if(p.salt3 < 0)p.salt3=0
+			if(p.salt4 < 0)p.salt4=0
+			if(p.total < 0)p.total=0
+            return p;
+        },
+
+        function () {
+            return {
+				salt0: 0,
+				salt1: 0,
+				salt2: 0,
+				salt3: 0,
+				salt4: 0,
+				total: 0
+            };
+        }
+    );
+	return group;
+}
+
+
+
+/*
+filtered_count.group(countGroup).valueAccessor(function(d) {
+      return d.cur;
+	});
+	
+total_count.group(countGroup).valueAccessor(function(d) {
+      return d.tot;
+	});
+*/
+
+
+var species = dc.rowChart("#chart-species");
+var subbasin = dc.rowChart("#chart-subbasin");
+var basin = dc.rowChart("#chart-basin");
+var rtpath = dc.rowChart("#chart-rtpath");
+var relsite = dc.pieChart("#chart-relsite");
+var rtype = dc.pieChart("#chart-rtype");
+var run = dc.pieChart("#chart-run");
+var transport = dc.pieChart("#chart-transport");
+var year = dc.barChart("#chart-year");
+
+var dateFormat = d3.time.format("%Y-%m-%d");
+
+function getClone(src) {
+  return Object.assign({}, src);
+}
+
+//d3.csv("JDJ-BON_SAR_All.csv", function(error2, sdata) {
+//d3.csv("DART_SAR_Data_2019-03-09.csv", function(error2, sdata) {
+//d3.csv("Combined_SAR_3-21-2019.csv", function(error2, sdata) {
+d3.csv("Recombined_DART_JDJ_BON_03-22-2019.csv", function(error2, sdata) {
+
+  if (error2) return console.warn(error2);
+
+
+
+var data = []
+
+	
+sdata.forEach(function(d){
+	d.Salt0 = +d.Salt0
+	d.Salt1 = +d.Salt1
+	d.Salt2 = +d.Salt2
+	d.Salt3 = +d.Salt3
+	d.Salt4 = +d.Salt4
+	d.CountOut = +d.CountOut
+})
+
+console.log(sdata)
+
+ndx = crossfilter(sdata);
+all = ndx.groupAll();	
+
+var yearDim = ndx.dimension(function(d) {return d.Year.toString();});		
+var runDim = ndx.dimension(function(d) {return d.Run;});
+var rtypeDim = ndx.dimension(function(d) {return d.Rtype;});
+var speciesDim = ndx.dimension(function(d) {return d.Species;});
+var basinDim = ndx.dimension(function(d) {return d.Basin;});
+var subbasinDim = ndx.dimension(function(d) {return rsites_subbasins[d.ReleaseSite].Subbasin;});
+var transportDim = ndx.dimension(function(d) {return d.Transported;});
+var rtpathDim = ndx.dimension(function(d) {return d.RTPath;});
+var relsiteDim = ndx.dimension(function(d) {return d.ReleaseSite;});
+
+var valueAccessor = function(d){
+	//return 100*(d.value.salt0 + d.value.salt1 + d.value.salt2 + d.value.salt3 + d.value.salt4)/d.value.total
+	return d.value.total
+}
+
+var yeargroup = getGroup(yearDim)
+	
+species
+	.data(function(group) {
+      return group.all().filter(function(kv) {
+	  return kv.value.total > 0; 
+	  });
+	})
+	.width(325)
+	.height(100)
+	.margins({top: 0, left: 5, right: 40, bottom: 0})
+	.dimension(speciesDim)
+	.group(getGroup(speciesDim))
+	.elasticX(true)
+	.transitionDuration(100)
+	.keyAccessor(function (p) {return p.key;})
+	.valueAccessor(valueAccessor)	
+
+console.log("species")
+
+basin
+	.data(function(group) {
+      return group.all().filter(function(kv) {
+	  return kv.value.total > 0; 
+	  });
+	})
+	.width(325)
+	.height(275)
+	.margins({top: 0, left: 5, right: 40, bottom: 0})
+    .dimension(basinDim)
+    .group(getGroup(basinDim))
+	.elasticX(true)
+	.keyAccessor(function (p) {return p.key;})
+	.valueAccessor(valueAccessor)	
+	.transitionDuration(100)	
+	//.ordering(function(d) {return subbasin_list.indexOf(d.key); })
+
+console.log("basin")
+
+subbasin
+	.data(function(group) {
+      return group.all().filter(function(kv) {
+	  return kv.value.total > 0; 
+	  });
+	})
+	.width(325)
+	.height(300)
+	.fixedBarHeight(15)
+	.margins({top: 0, left: 5, right: 40, bottom: 0})
+    .dimension(subbasinDim)
+    .group(getGroup(subbasinDim))
+	.elasticX(true)
+	.keyAccessor(function (p) {return p.key;})
+	.valueAccessor(valueAccessor)	
+	.transitionDuration(100)
+	.on('postRedraw',function(chart){
+		var ratio = chart.height()/chart.data().length
+		if(ratio < 20.9 | ratio > 21.1){
+			chart.height(21*chart.data().length)
+			chart.render()
+			chart.redraw()
+		}
+		d3.selectAll(".dc-chart g.row text").style("fill","black");
+	})	
+
+console.log("subbasin")
+
+rtpath
+	.data(function(group) {
+      return group.all().filter(function(kv) {
+	  return kv.value.total > 0; 
+	  });
+	})
+	.width(325)
+	.height(140)
+	.margins({top: 0, left: 5, right: 40, bottom: 0})
+    .dimension(rtpathDim)
+    .group(getGroup(rtpathDim))
+	.elasticX(true)
+	.keyAccessor(function (p) {return p.key;})
+	.valueAccessor(valueAccessor)
+	.transitionDuration(100)
+
+console.log("rtpath")	
+
+relsite
+	.data(function(group) {
+      return group.all().filter(function(kv) {
+	  return kv.value.total > 0; 
+	  });
+	})
+    .width(350)
+    .height(175)
+    .radius(70)
+	.cx(70)
+	.cy(80)
+	.dimension(relsiteDim)
+	.group(getGroup(relsiteDim))
+	.keyAccessor(function (p) {return p.key;})
+	.valueAccessor(valueAccessor)
+	.renderLabel(false)
+	.legend(dc.legend().x(160).y(10).itemHeight(13).gap(5))
+	
+	
+console.log("relsite")	
+	
+run
+	.data(function(group) {
+      return group.all().filter(function(kv) {
+	  return kv.value.total > 0; 
+	  });
+	})
+    .width(320)
+    .height(150)
+    .radius(70)
+	.cx(70)
+	.cy(80)
+	.minAngleForLabel(3)
+	.legend(dc.legend().x(150).y(10).itemHeight(13).gap(5))	
+	.dimension(runDim)
+	.group(getGroup(runDim))
+	.keyAccessor(function (p) {return p.key;})
+	.valueAccessor(valueAccessor)
+
+console.log("run")
+
+transport
+    .width(320)
+    .height(150)
+    .radius(70)
+	.cx(70)
+	.cy(80)
+	.minAngleForLabel(3)
+	.legend(dc.legend().x(150).y(10).itemHeight(13).gap(5))	
+	.dimension(transportDim)
+	.group(getGroup(transportDim))
+	.keyAccessor(function (p) {return p.key;})
+	.valueAccessor(valueAccessor)
+
+console.log("run")
+	
+rtype
+    .width(320)
+    .height(150)
+    .radius(70)
+	.cx(70)
+	.cy(80)
+	.minAngleForLabel(3)
+	.legend(dc.legend().x(150).y(10).itemHeight(13).gap(5))	
+	.dimension(rtypeDim)
+	.group(getGroup(rtypeDim))
+	.keyAccessor(function (p) {return p.key;})
+	.valueAccessor(valueAccessor)
+	//.colors().range(["#08519c","#4292c6","#aaaaaa"]).domain(["Natural","Hatchery","Mixed"])
+
+console.log("rtype")
+
+var getSurvived = function(d){
+	var surv = 0
+	surv += params.salt.salt4 ?  d.value.salt4 : 0;
+	surv += params.salt.salt3 ?  d.value.salt3 : 0;
+	surv += params.salt.salt2 ?  d.value.salt2 : 0;
+	surv += params.salt.salt1 ?  d.value.salt1 : 0;
+	surv += params.salt.salt0 ?  d.value.salt0 : 0;
+	return surv;
+}
+
+var showBarTotals = function(chart){
+	var offset = (chart.x()("2010") - chart.x()("2009"))/2 - 2
+	var data = chart.data()
+	data = data[data.length-1].values
+	chart.svg()
+	   .selectAll("text.bar_value")
+	   .data(data)
+	   .enter()
+	   .append("text")
+	   .attr("class","bar_value")
+	   .attr('text-anchor', 'start')
+	   .attr("transform",function(d){
+		  var x = chart.x()(d.x) + chart.margins().left + offset
+		  var y = chart.y()(d.y + d.y0) + chart.margins().top - 3
+		  return " translate(" + x + "," + y  + ") rotate(-90)"
+	   })
+	   .text(function(d){
+			var total = d3.format(".2f")(d.y + d.y0)
+			return total > 0 ? total : ""
+		})
+	   .style("font-size","15")
+}
+
+var showConfidence = function(chart){
+	chart.svg().selectAll("g.limits").remove()
+	var lineFunction = d3.svg.line()
+		.x(function(d) { return d.x; })
+		.y(function(d) { return d.y; })
+		.interpolate("linear");
+	
+	chart.svg().selectAll("g.limits")
+		.data(chart.group().top(Infinity))
+		.enter()
+		.append("g")
+		.attr("class","limits")
+		
+	var offset = (chart.x()("2010") - chart.x()("2009"))/2
+	
+	chart.svg().selectAll("g.limits")
+		.append("path")
+		.attr("d", function (d) {
+			var surv = getSurvived(d)
+			var xpos = chart.x()(d.key) + chart.margins().left  + offset
+			var cvalues = wilsonScore(surv,d.value.total)
+			var ylower = chart.y()(100*cvalues.left) + chart.margins().top
+			var yupper = chart.y()(100*cvalues.right) + chart.margins().top
+			var points = [{x:xpos,y:ylower},{x:xpos,y:yupper}];
+			return lineFunction(points);
+		})
+		.style("opacity",function(d){return getSurvived(d) > 0 ? 1 : 0})
+		.style("stroke-width", 2)
+		.style("stroke", "black");		
+}
+
+year
+	.width(720)
+	.height(450)
+	.margins({top: 50, right: 10, bottom: 45, left: 40})
+	.y(d3.scale.linear().domain([0,5]))
+	.elasticY(false)
+	.x(d3.scale.ordinal())
+	.xUnits(dc.units.ordinal)	
+	.brushOn(false)
+	.dimension(yearDim)
+	.group(yeargroup,"4 Salt")
+	.keyAccessor(function (p) {return p.key;})
+	.valueAccessor(function(p){return params.salt.salt4 ? 100*p.value.salt4/p.value.total : 0;})
+	.stack(yeargroup,"3 Salt",function(p){return params.salt.salt3 ? 100*p.value.salt3/p.value.total : 0;})
+	.stack(yeargroup,"2 Salt",function(p){return params.salt.salt2 ? 100*p.value.salt2/p.value.total : 0;})
+	.stack(yeargroup,"1 Salt",function(p){return params.salt.salt1 ? 100*p.value.salt1/p.value.total : 0;})
+	.stack(yeargroup,"0 Salt",function(p){return params.salt.salt0 ? 100*p.value.salt0/p.value.total : 0;})
+	.legend(dc.legend().x(50).y(5).itemHeight(15).gap(3).horizontal(true))
+	.title(function(d){ 
+		var surv = getSurvived(d);
+		cvalues = wilsonScore(surv,d.value.total)
+		return "Year: " + d.key + "\nSurvived: " + surv + "\nTotal: " + d.value.total + "\nSAR: " + d3.format(".2f")(100*surv/d.value.total) + "%\nUpper: " + d3.format(".2f")(100*cvalues.right) + "\nLower: " + d3.format(".2f")(100*cvalues.left) + "\n0 Salt: " + d.value.salt0 + "\n1 Salt: " + d.value.salt1 + "\n2 Salt: " + d.value.salt2 + "\n3 Salt: " + d.value.salt3 + "\n4 Salt: " + d.value.salt4  
+	})
+	.on('postRedraw',function(chart){
+		if(params.showConfidence)showConfidence(chart)
+		if(params.showBarTotals)showBarTotals(chart)
+		StyleChartText(chart)
+	})
+	.yAxisLabel("SAR(%)")	
+	.colors().range(colorbrewer.Blues[9].reverse())
+	
+	
+	d3.selectAll("#saltbox")
+		.style("border-bottom",function(d,i){
+			return "10px solid " + year.colors().range()[i];
+		})
+		
+console.log("year")
+
+	var StyleChartText = function(chart){
+		chart.select(".x.axis").selectAll("text").style("font-size","15px")
+		chart.select(".y.axis").selectAll("text").style("font-size","15px")
+		chart.select(".y-axis-label").style("font-size","16px")	
+	}
+
+	dc.renderAll();
+	StyleChartText(year)
+	d3.selectAll(".dc-chart g.row text").style("fill","black");
+	document.getElementById("spinner").style.visibility = 'hidden';
+
+	var setFilterToggle = function(chart,id){
+		var svg = chart.svg();
+		d3.select("#" + id)
+			.select("strong")
+			.on("click",function(){
+				if(svg.style("display")=="inline")svg.style("display","none")
+				else {
+					svg.style("display","inline")
+					chart.redraw()
+				}
+			})
+			.style("cursor","pointer")
+	}
+	
+	setFilterToggle(rtype,"chart-rtype")
+	setFilterToggle(rtpath,"chart-rtpath")
+	setFilterToggle(run,"chart-run")
+	setFilterToggle(species,"chart-species")
+	setFilterToggle(subbasin,"chart-subbasin")
+	setFilterToggle(relsite,"chart-relsite")	
+});
+
+  d3.select("#filter10").on("transitionend", function(d) {
+  //$('#filter20').bind('focusin', function(e){
+  console.log("loaded")
+  if(!params.leafmap){
+	addMap();
+	addRivers();
+	//addDams();
+	addLayerGroups();
+	addSpSuChinookUse();	
+	addPopBoundaries("styleChinook")
+	addPopBoundaries("styleSteelhead")
+	$('.leaflet-control-layers-selector')[4].click()
+	$('.leaflet-control-layers-selector')[11].click()  
+	loadRedds();
+	loadNorWest();
+	}
+});
+
+//load redd data
+params.redds = {}
+
+var loadRedds = function(){
+	d3.csv("https://salmonetics.github.io/data-Spawning/redds/IDFG_2000-2018_ReddDetail_sm.csv", function(error1, data) {
+		if (error1) return console.warn(error1);
+		data.forEach(function(d){
+			d.CountNew = +d.CountNew;
+			d.Latitude = +d.Latitude;
+			d.Longitude = +d.Longitude;
+			d.SurveyYear = +d.SurveyYear;
+			d.TRT_POP = d.TRT_POP == "" ? "NA" : d.TRT_POP;
+			//if(d.CountNew > 1)console.log(d)
+		})
+		
+		params.redds.data = [];
+		data.forEach(function(d){
+			for(i=0;i<d.CountNew;i++)params.redds.data.push({"SurveyYear": d.SurveyYear,"Latitude": d.Latitude, "Longitude": d.Longitude, "Type": "Waypoint", "ID": "None", TRT_POP: d.TRT_POP, "Count": d.CountNew})
+		})
+
+		loadSpawners();
+		params.redds.ndx = crossfilter(params.redds.data);
+		params.redds.year = dc.barChart("#redds-year","redds");
+		params.redds.pop = dc.rowChart("#trt-pop","redds");
+		var reddsyearDim = params.redds.ndx.dimension(function(d) {return d.SurveyYear;});
+		var reddspopDim = params.redds.ndx.dimension(function(d) {return d.TRT_POP;});
+		//var reddspopDim = params.redds.ndx.dimension(function(d) {return "test";});
+		var reddsIDDim = params.redds.ndx.dimension(function(d) {return d.ID;});
+		
+		var getGroup = function(dim){
+			var group = dim.group().reduce(
+				function (p, v) {
+					if(v.Type=="Waypoint"){
+						p.sum += v.Count;
+						return p;
+					}
+					else{
+						if(!p.transects[v.ID])p.transects[v.ID] = 0;
+						p.transects[v.ID] += v.Count;
+					}
+				},
+				
+				function (p, v) {
+					if(v.Type=="Waypoint"){
+						p.sum -= v.Count;
+						return p;
+					}
+					else{
+						p.transects[v.ID] -= v.Count;
+					}
+				},
+
+				function () {
+					return {
+						sum: 0,
+						transects: {}
+					};
+				}
+			);
+			return group;
+		}
+
+		params.redds.transect_group = getGroup(reddsIDDim)
+		
+		params.redds.year
+			.width(350)
+			.height(200)
+			.margins({top: 10, right: 0, bottom: 35, left: 60})
+			.y(d3.scale.linear())
+			.elasticY(true)
+			.x(d3.scale.ordinal())
+			.xUnits(dc.units.ordinal)
+			.brushOn(false)
+			.dimension(reddsyearDim)
+			.group(reddsyearDim.group())
+			.on("postRedraw",function(d){
+				drawRedds();
+			})
+
+		params.redds.pop
+			.width(325)
+			.height(600)
+			.margins({top: 0, left: 5, right: 40, bottom: 20})
+			.dimension(reddspopDim)
+			.group(reddspopDim.group())
+			.elasticX(true)
+			.transitionDuration(100)
+			//.ordering(function(d) {return subbasin_list.indexOf(d.key); })			
+		
+		var redds = L.markerClusterGroup();
+		params.redds.layer = redds;
+		params.layerControl.addOverlay(redds, "Redds");
+		dc.renderAll("redds")
+		d3.selectAll(".dc-chart g.row text").style("fill","black");
+		drawRedds();	  
+	});
+}
+
+var drawRedds = function(){
+		params.redds.layer.clearLayers();
+		params.redds.year.dimension().top(Infinity).forEach(function(d){
+			if(d.Type == "Waypoint"){
+				//for(i=0;i<d.Count;i++){
+					params.redds.layer.addLayer(L.marker([d.Latitude,d.Longitude]));
+				//}
+			}
+		})
+}
+
+//load spawner data
+var loadSpawners = function(){
+	d3.csv("IDFGReddPivotGrid2000-2017.csv", function(error1, sdata) {
+		if (error1) return console.warn(error2);
+	d3.json("Chinook_Redd_Count_Transects_sm.geojson", function(error2, json) {
+	  if (error2) return console.warn(error2);
+	d3.json("IDFG_ReddTransectLocations.json",function(error3, tlocs){
+	  params.transects = {}
+		
+		function highlightRedds(e) {
+			var layer = e.target;
+			layer.setStyle({
+					opacity: 1,
+					weight: 4
+			});
+		}
+			
+		function resetRedds(e) {
+			redds.resetStyle(e.target);
+		}
+			
+		function onEachRedd(feature, layer) {
+			/*
+			var latsum =0, longsum = 0, count = 0;
+			feature.geometry.coordinates.forEach(function(d){
+				latsum += d[0];
+				longsum += d[1]
+				count++;
+			})
+			feature.properties.centroid = [latsum/count,longsum/count]
+			console.log(feature.properties.Transect + "," + latsum/count + "," + longsum/count)
+			params.transects[feature.properties.Transect] = feature;
+			*/
+			layer.on({
+				mouseover: highlightRedds,
+				mouseout: resetRedds
+			});
+		}
+		
+		var redds = L.geoJSON(json, {
+			color: 'red',
+			weight: 2,
+			opacity: .7,
+			onEachFeature: onEachRedd
+		});
+		
+		params.redds.transects = json;
+		params.layerControl.addOverlay(redds, "Redd Transects");
+
+		sdata.forEach(function(d){
+			for(i=2000;i<2018;i++){
+				var iyear = i.toString()
+				//if(d.SGR_Transect == "NS-2c")d.SGR_Transect = "UC-SU-G";
+				//var transect = params.transects[d.SGR_Transect].properties
+				//if(+d[iyear] >= 0)params.redds.data.push({"SurveyYear": i,"Latitude": transect.centroid[0], "Longitude": transect.centroid[1], "Type": "Transect", ID: transect.SGR_Transect, "Count": +d[iyear]})
+				//if(d[iyear]!= "NULL")params.redds.data.push({"SurveyYear": +iyear,"Latitude": tlocs[d.SGR_Transect].lat, "Longitude": tlocs[d.SGR_Transect].lng, "Type": "Transect", "ID": d.SGR_Transect, "Count": +d[iyear], TRT_POP: "Unknown"})
+			}
+		})
+	});
+	});
+	});
+}
+
+params.COMID = {}
+var loadNorWest = function(){
+	d3.csv("NorWestAttrs.csv", function(error, data) {	
+		data.forEach(function(d){
+			if(!params.COMID[d.COMID])params.COMID[d.COMID] = {}
+			params.COMID[d.COMID].ELEV = +d.ELEV;
+			params.COMID[d.COMID].CANOPY = +d.CANOPY;
+			params.COMID[d.COMID].SLOPE = +d.SLOPE;
+			params.COMID[d.COMID].PRECIP = +d.PRECIP
+			params.COMID[d.COMID].CUMDRAINAG = + d.CUMDRAINAG
+			params.COMID[d.COMID].S1_93_11 = +d.S1_93_11
+			params.COMID[d.COMID].S30_2040D = +d.S30_2040D;
+			params.COMID[d.COMID].MEANAUGCAT = d.S1_93_11 < 9 ? "sub-optimal low" : (d.S1_93_11 < 17 ? "optimal" : (d.S1_93_11 < 19 ? "sub-optimal high" : "lethal"))
+			params.COMID[d.COMID].MEANAUGCAT2040 = d.S30_2040D < 9 ? "sub-optimal low" : (d.S30_2040D < 17 ? "optimal" : (d.S30_2040D < 19 ? "sub-optimal high" : "lethal"))
+		})
+	})
+}
+
+var color_coding = "none";
+
+
+</script>
+
+
+<script>
+Date.prototype.getWeek = function() { 
+  // Create a copy of this date object  
+  var target  = new Date(this.valueOf());  
+  // ISO week date weeks start on monday, so correct the day number  
+  var dayNr   = (this.getDay() + 6) % 7;  
+  // Set the target to the thursday of this week so the  
+  // target date is in the right year  
+  target.setDate(target.getDate() - dayNr + 3);  
+  // ISO 8601 states that week 1 is the week with january 4th in it  
+  var jan4    = new Date(target.getFullYear(), 0, 4);  
+  // Number of days between target date and january 4th  
+  var dayDiff = (target - jan4) / 86400000;    
+  if(new Date(target.getFullYear(), 0, 1).getDay() < 5) {
+    // Calculate week number: Week 1 (january 4th) plus the    
+    // number of weeks between target date and january 4th    
+    return 1 + Math.ceil(dayDiff / 7);    
+  }
+  else {  // jan 4th is on the next week (so next week is week 1)
+    return Math.ceil(dayDiff / 7); 
+  }
+};
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-18774702-1', 'auto');
+  ga('send', 'pageview');
+
+var wilsonScore = function (positiveScore, total) {
+//from https://github.com/msn0/wilson-score-interval
+    if (total === 0) {
+        return {
+            left: 0,
+            right: 0
+        };
+    }
+
+    // phat is the proportion of successes
+    // in a Bernoulli trial process
+    const phat = positiveScore / total;
+
+    // z is 1-alpha/2 percentile of a standard
+    // normal distribution for error alpha=5%
+    const z = 1.96;
+
+    // implement the algorithm
+    // (http://goo.gl/kgmV3g)
+    const a = phat + z * z / (2 * total);
+    const b = z * Math.sqrt((phat * (1 - phat) + z * z / (4 * total)) / total);
+    const c = 1 + z * z / total;
+
+    return {
+        left: (a - b) / c,
+        right: (a + b) / c
+    };
+};
+
+var cloneSVG = function(chart,target){
+	var svg = chart.svg().node().cloneNode(true)
+	var text = d3.select('#clone_text').node().value
+	$("#" + target).append("<h4>" + text + "</h4>")
+	$("#" + target).append(svg);// append the img to the DOM
+	$("#" + target).append("<br/>")	
+	d3.select('#clone_text').node().value = ""
+}
+
+
+var createImagePlot = function(chart,target){
+	 svgString = getSVGString(chart.svg().node())
+	 var imgElem = svgString2Image( svgString, chart.width(), chart.height(), 'png');
+	 console.log(d3.select('#' + target))
+	 $('#'+target).append(imgElem);// append the img to the DOM
+	 $('#'+target).append("<br/>")
+   }
+
+// Below are the functions that handle actual exporting:
+// getSVGString ( svgNode ) and svgString2Image( svgString, width, height, format, callback )
+function getSVGString( svgNode ) {
+	svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
+	var cssStyleText = getCSSStyles( svgNode );
+	appendCSS( cssStyleText, svgNode );
+
+	var serializer = new XMLSerializer();
+	var svgString = serializer.serializeToString(svgNode);
+	svgString = svgString.replace(/(\w+)?:?xlink=/g, 'xmlns:xlink='); // Fix root xlink without namespace
+	svgString = svgString.replace(/NS\d+:href/g, 'xlink:href'); // Safari NS namespace fix
+
+	return svgString;
+
+	function getCSSStyles( parentElement ) {
+		var selectorTextArr = [];
+
+		// Add Parent element Id and Classes to the list
+		selectorTextArr.push( '#'+parentElement.id );
+		for (var c = 0; c < parentElement.classList.length; c++)
+				if ( !contains('.'+parentElement.classList[c], selectorTextArr) )
+					selectorTextArr.push( '.'+parentElement.classList[c] );
+
+		// Add Children element Ids and Classes to the list
+		var nodes = parentElement.getElementsByTagName("*");
+		for (var i = 0; i < nodes.length; i++) {
+			var id = nodes[i].id;
+			if ( !contains('#'+id, selectorTextArr) )
+				selectorTextArr.push( '#'+id );
+
+			var classes = nodes[i].classList;
+			for (var c = 0; c < classes.length; c++)
+				if ( !contains('.'+classes[c], selectorTextArr) )
+					selectorTextArr.push( '.'+classes[c] );
+		}
+
+		// Extract CSS Rules
+		var extractedCSSText = "";
+		for (var i = 0; i < document.styleSheets.length; i++) {
+			var s = document.styleSheets[i];
+			
+			try {
+			    if(!s.cssRules) continue;
+			} catch( e ) {
+		    		if(e.name !== 'SecurityError') throw e; // for Firefox
+		    		continue;
+		    	}
+
+			var cssRules = s.cssRules;
+			for (var r = 0; r < cssRules.length; r++) {
+				if ( contains( cssRules[r].selectorText, selectorTextArr ) )
+					extractedCSSText += cssRules[r].cssText;
+			}
+		}
+		
+
+		return extractedCSSText;
+
+		function contains(str,arr) {
+			return arr.indexOf( str ) === -1 ? false : true;
+		}
+
+	}
+
+	function appendCSS( cssText, element ) {
+		var styleElement = document.createElement("style");
+		styleElement.setAttribute("type","text/css"); 
+		styleElement.innerHTML = cssText;
+		var refNode = element.hasChildNodes() ? element.children[0] : null;
+		element.insertBefore( styleElement, refNode );
+	}
+}
+
+
+//function svgString2Image( svgString, width, height, format, callback ) {
+function svgString2Image( svgString, width, height, format) {
+	var format = format ? format : 'png';
+
+	var imgsrc = 'data:image/svg+xml;base64,'+ btoa( unescape( encodeURIComponent( svgString ) ) ); // Convert SVG string to data URL
+
+	var canvas = document.createElement("canvas");
+	var context = canvas.getContext("2d");
+
+	canvas.width = width;
+	canvas.height = height;
+
+	var image = new Image();
+	image.onload = function() {
+		context.clearRect ( 0, 0, width, height );
+		context.drawImage(image, 0, 0, width, height);
+
+		canvas.toBlob( function(blob) {
+			var filesize = Math.round( blob.length/1024 ) + ' KB';
+			//if ( callback ) callback( blob, filesize );
+		});
+
+		
+	};
+
+	image.src = imgsrc;
+	return(image)
+} 
+
+var rsites_subbasins =
+{"15MILC":{"Subbasin":"Middle Columbia-Hood"},"1890SC":{"Subbasin":"Methow"},"18MILC":{"Subbasin":"Lemhi"},"21MILC":{"Subbasin":"Sanpoil"},"30MILC":{"Subbasin":"Sanpoil"},"30ML2C":{"Subbasin":"Lower John Day"},"3LINKC":{"Subbasin":"Lower Selway"},"3MILC":{"Subbasin":"Franklin D. Roosevelt Lake"},"3MILIS":{"Subbasin":"Middle Columbia-Lake Wallula"},"4JUL2C":{"Subbasin":"Middle Salmon-Panther"},"4JULYC":{"Subbasin":"Upper Salmon"},"9MILEC":{"Subbasin":"Okanogan"},"ABEH":{"Subbasin":"Lower Columbia-Clatskanie"},"ABERC":{"Subbasin":"Lower Columbia-Clatskanie"},"AENEAC":{"Subbasin":"Okanogan"},"AGNCYC":{"Subbasin":"Lemhi"},"AHSH":{"Subbasin":"Lower Columbia"},"AHTANC":{"Subbasin":"Lower Yakima"},"AHTANF":{"Subbasin":"Lower Yakima"},"ALEXC":{"Subbasin":"South Fork Salmon"},"ALMOTC":{"Subbasin":"Lower Snake-Tucannon"},"ALPOWC":{"Subbasin":"Lower Snake-Tucannon"},"ALTULC":{"Subbasin":"Upper Salmon"},"ALTURL":{"Subbasin":"Upper Salmon"},"AMERIR":{"Subbasin":"Naches"},"AMERR":{"Subbasin":"South Fork Clearwater"},"ANTELC":{"Subbasin":"Trout"},"ANTOIC":{"Subbasin":"Okanogan"},"APROOK":{"Subbasin":"Upper Columbia-Entiat"},"ASOTIC":{"Subbasin":"Lower Snake-Asotin"},"ASOTNF":{"Subbasin":"Lower Snake-Asotin"},"ASOTSF":{"Subbasin":"Lower Snake-Asotin"},"BAD":{"Subbasin":"Lower Cowlitz"},"BADGEI":{"Subbasin":"Middle Columbia-Lake Wallula"},"BAKEOC":{"Subbasin":"Lower Deschutes"},"BANKSL":{"Subbasin":"Banks Lake"},"BARGAC":{"Subbasin":"Middle Salmon-Chamberlain"},"BARNAC":{"Subbasin":"Franklin D. Roosevelt Lake"},"BASINC":{"Subbasin":"Lemhi"},"BASN2C":{"Subbasin":"Lemhi"},"BASN3C":{"Subbasin":"Upper Salmon"},"BBC":{"Subbasin":"Hood Canal"},"BBCTRP":{"Subbasin":"Clearwater"},"BCANF":{"Subbasin":"Wallowa"},"BCCAP":{"Subbasin":"Clearwater"},"BCHINL":{"Subbasin":"Upper Deschutes"},"BCKHRC":{"Subbasin":"South Fork Salmon"},"BCKROC":{"Subbasin":"Umatilla"},"BCL":{"Subbasin":"North Santiam"},"BCLFBY":{"Subbasin":"North Santiam"},"BCLTAL":{"Subbasin":"North Santiam"},"BCTRAP":{"Subbasin":"Lake Washington"},"BEAR2C":{"Subbasin":"Lower John Day"},"BEAR3C":{"Subbasin":"Lower Columbia"},"BEAR4C":{"Subbasin":"South Fork Salmon"},"BEAR5C":{"Subbasin":"Middle Fork John Day"},"BEARC":{"Subbasin":"Upper Selway"},"BEARVC":{"Subbasin":"Upper Middle Fork Salmon"},"BEAV2C":{"Subbasin":"Methow"},"BEAV3C":{"Subbasin":"Wenatchee"},"BEAV3P":{"Subbasin":"Wenatchee"},"BEAV4C":{"Subbasin":"Lower Middle Fork Salmon"},"BEAVC":{"Subbasin":"Upper Middle Fork Salmon"},"BEAVEC":{"Subbasin":"Upper Salmon"},"BEDRKC":{"Subbasin":"Clearwater"},"BEECEF":{"Subbasin":"Upper John Day"},"BEECHC":{"Subbasin":"Upper John Day"},"BERRYC":{"Subbasin":"Clackamas"},"BGM":{"Subbasin":"Walla Walla"},"BGMTAL":{"Subbasin":"Walla Walla"},"BIDDLP":{"Subbasin":"Methow"},"BIG1C":{"Subbasin":"Lower Columbia"},"BIG2C":{"Subbasin":"Lower Middle Fork Salmon"},"BIG2CT":{"Subbasin":"Lower Middle Fork Salmon"},"BIG3C":{"Subbasin":"Upper Yakima"},"BIG8MC":{"Subbasin":"Lemhi"},"BIGB2C":{"Subbasin":"Lemhi"},"BIGBEC":{"Subbasin":"Clearwater"},"BIGC":{"Subbasin":"Lower Columbia"},"BIGCAC":{"Subbasin":"Clearwater"},"BIGFLC":{"Subbasin":"Lochsa"},"BIGMAC":{"Subbasin":"Middle Salmon-Chamberlain"},"BIGMEC":{"Subbasin":"Wenatchee"},"BIGSPC":{"Subbasin":"Lemhi"},"BIGWSP":{"Subbasin":"Middle Columbia-Hood"},"BIRCHC":{"Subbasin":"Umatilla"},"BIRCHE":{"Subbasin":"Umatilla"},"BIRCHW":{"Subbasin":"Umatilla"},"BLDRCK":{"Subbasin":"Kettle"},"BLDRNF":{"Subbasin":"Kettle"},"BLDRSF":{"Subbasin":"Kettle"},"BLKBAS":{"Subbasin":"Middle Columbia-Hood"},"BLNDSL":{"Subbasin":"Lower Columbia"},"BLUEC":{"Subbasin":"Klickitat"},"BO1":{"Subbasin":"Lower Columbia-Sandy"},"BO1BYP":{"Subbasin":"Lower Columbia-Sandy"},"BO1GWL":{"Subbasin":"Lower Columbia-Sandy"},"BO2":{"Subbasin":"Lower Columbia-Sandy"},"BO2BCC":{"Subbasin":"Lower Columbia-Sandy"},"BO2BYP":{"Subbasin":"Lower Columbia-Sandy"},"BO2GAT":{"Subbasin":"Lower Columbia-Sandy"},"BO2GWL":{"Subbasin":"Lower Columbia-Sandy"},"BO2ORI":{"Subbasin":"Lower Columbia-Sandy"},"BO2RRR":{"Subbasin":"Lower Columbia-Sandy"},"BOBSC":{"Subbasin":"Clearwater"},"BOHANC":{"Subbasin":"Lemhi"},"BOHEFC":{"Subbasin":"Lemhi"},"BON":{"Subbasin":"Lower Columbia-Sandy"},"BONAFF":{"Subbasin":"Lower Columbia-Sandy"},"BONAPC":{"Subbasin":"Okanogan"},"BONH":{"Subbasin":"Lower Columbia-Sandy"},"BONLD1":{"Subbasin":"Lower Columbia-Sandy"},"BONLD2":{"Subbasin":"Lower Columbia-Sandy"},"BONLD3":{"Subbasin":"Lower Columbia-Sandy"},"BONMRT":{"Subbasin":"Lower Columbia-Sandy"},"BONP":{"Subbasin":"Umatilla"},"BOSTCC":{"Subbasin":"Umatilla"},"BOUL2C":{"Subbasin":"Little Salmon"},"BOUL3C":{"Subbasin":"Clearwater"},"BOULDC":{"Subbasin":"Lochsa"},"BOUNDC":{"Subbasin":"Upper Middle Fork Salmon"},"BOUTRP":{"Subbasin":"Lochsa"},"BRAMYC":{"Subbasin":"Lower Middle Fork Salmon"},"BRDG2C":{"Subbasin":"Middle Fork John Day"},"BRDG3C":{"Subbasin":"Sanpoil"},"BREITR":{"Subbasin":"North Santiam"},"BRENNC":{"Subbasin":"Upper Columbia-Entiat"},"BRIDGC":{"Subbasin":"Lower John Day"},"BRIDWB":{"Subbasin":"Lower John Day"},"BRUS2C":{"Subbasin":"Klickitat"},"BRUSHC":{"Subbasin":"Lochsa"},"BSHEEC":{"Subbasin":"Imnaha"},"BSHPCK":{"Subbasin":"Franklin D. Roosevelt Lake"},"BTIMBC":{"Subbasin":"Lemhi"},"BUCK2C":{"Subbasin":"Lower Middle Fork Salmon"},"BUCK3C":{"Subbasin":"Middle Columbia-Hood"},"BUCK4C":{"Subbasin":"Lemhi"},"BUCKAP":{"Subbasin":"Naches"},"BUCKC":{"Subbasin":"Umatilla"},"BUCKHC":{"Subbasin":"Lower Deschutes"},"BUCKSL":{"Subbasin":"Naches"},"BUMPR":{"Subbasin":"Naches"},"BURL":{"Subbasin":"Puget Sound"},"BURNLC":{"Subbasin":"South Fork Salmon"},"BUTCHC":{"Subbasin":"Umatilla"},"BUTCHP":{"Subbasin":"Wenatchee"},"BVAL2C":{"Subbasin":"Lemhi"},"BVRLYI":{"Subbasin":"Upper Columbia-Priest Rapids"},"CABINC":{"Subbasin":"Lower Middle Fork Salmon"},"CABLNF":{"Subbasin":"North Fork John Day"},"CALAPR":{"Subbasin":"Upper Willamette"},"CAMASC":{"Subbasin":"Lower Middle Fork Salmon"},"CAMP2C":{"Subbasin":"Middle Fork John Day"},"CAMP3C":{"Subbasin":"South Fork Salmon"},"CAMP4C":{"Subbasin":"Imnaha"},"CAMPC":{"Subbasin":"Umatilla"},"CANALC":{"Subbasin":"Imnaha"},"CANDLC":{"Subbasin":"Upper Deschutes"},"CANY2C":{"Subbasin":"Lemhi"},"CANY3C":{"Subbasin":"Upper Deschutes"},"CANY4C":{"Subbasin":"Upper John Day"},"CANYOC":{"Subbasin":"Lochsa"},"CAPEHC":{"Subbasin":"Upper Middle Fork Salmon"},"CARMEC":{"Subbasin":"Middle Salmon-Panther"},"CARP":{"Subbasin":"Methow"},"CARS":{"Subbasin":"Middle Columbia-Hood"},"CASC":{"Subbasin":"Middle Columbia-Hood"},"CASS":{"Subbasin":"Okanogan"},"CATCMF":{"Subbasin":"Upper Grande Ronde"},"CATCNF":{"Subbasin":"Upper Grande Ronde"},"CATCSF":{"Subbasin":"Upper Grande Ronde"},"CATHEC":{"Subbasin":"Upper Grande Ronde"},"CATHEP":{"Subbasin":"Upper Grande Ronde"},"CATHEW":{"Subbasin":"Upper Grande Ronde"},"CAVEC":{"Subbasin":"Lower Middle Fork Salmon"},"CBD":{"Subbasin":"Middle Columbia-Hood"},"CBDFBY":{"Subbasin":"Middle Columbia-Hood"},"CBLAIS":{"Subbasin":"Middle Columbia-Lake Wallula"},"CDP":{"Subbasin":"Skokomish"},"CEDA2C":{"Subbasin":"Clearwater"},"CEDARC":{"Subbasin":"Lewis"},"CEFLAF":{"Subbasin":"Lower Selway"},"CFCT":{"Subbasin":"Lake Chelan"},"CFCTRP":{"Subbasin":"Lochsa"},"CFD":{"Subbasin":"Lower Cowlitz"},"CFDNSC":{"Subbasin":"Lower Cowlitz"},"CFDSF2":{"Subbasin":"Lower Cowlitz"},"CFDSF3":{"Subbasin":"Lower Cowlitz"},"CFDTAL":{"Subbasin":"Lower Cowlitz"},"CGR":{"Subbasin":"Mckenzie"},"CGRTAL":{"Subbasin":"Mckenzie"},"CHALLC":{"Subbasin":"Upper Salmon"},"CHAMBC":{"Subbasin":"Middle Salmon-Chamberlain"},"CHAMPC":{"Subbasin":"Upper Salmon"},"CHAMWF":{"Subbasin":"Middle Salmon-Chamberlain"},"CHANDL":{"Subbasin":"Lower Yakima"},"CHARLC":{"Subbasin":"Lower Snake-Asotin"},"CHEL":{"Subbasin":"Chief Joseph"},"CHELAR":{"Subbasin":"Lake Chelan"},"CHEWEC":{"Subbasin":"Colville"},"CHEWUP":{"Subbasin":"Methow"},"CHEWUR":{"Subbasin":"Methow"},"CHFARF":{"Subbasin":"Lake Chelan"},"CHIKAC":{"Subbasin":"Wenatchee"},"CHINOR":{"Subbasin":"Lower Columbia"},"CHIP":{"Subbasin":"Wenatchee"},"CHIW":{"Subbasin":"Wenatchee"},"CHIWAC":{"Subbasin":"Wenatchee"},"CHIWAR":{"Subbasin":"Wenatchee"},"CHIWAT":{"Subbasin":"Wenatchee"},"CHJO":{"Subbasin":"Chief Joseph"},"CHUMSC":{"Subbasin":"Wenatchee"},"CISPUR":{"Subbasin":"Upper Cowlitz"},"CJRAP":{"Subbasin":"Lower Snake-Asotin"},"CLARFP":{"Subbasin":"Upper Yakima"},"CLCKMS":{"Subbasin":"Clackamas"},"CLE":{"Subbasin":"Upper Yakima"},"CLEA2C":{"Subbasin":"Middle Fork John Day"},"CLEA3C":{"Subbasin":"Lewis"},"CLEARC":{"Subbasin":"Middle Fork Clearwater"},"CLEARP":{"Subbasin":"Lewis"},"CLEBYP":{"Subbasin":"Upper Yakima"},"CLEE":{"Subbasin":"Upper Yakima"},"CLEFBY":{"Subbasin":"Upper Yakima"},"CLELMD":{"Subbasin":"Upper Yakima"},"CLELMR":{"Subbasin":"Upper Yakima"},"CLETAL":{"Subbasin":"Upper Yakima"},"CLRBIS":{"Subbasin":"Lost"},"CLRBR":{"Subbasin":"Middle Columbia-Hood"},"CLWH":{"Subbasin":"Lower North Fork Clearwater"},"CLWHNF":{"Subbasin":"Lower North Fork Clearwater"},"CLWR":{"Subbasin":"Clearwater"},"CLWRMF":{"Subbasin":"Middle Fork Clearwater"},"CLWRNF":{"Subbasin":"Lower North Fork Clearwater"},"CLWRSF":{"Subbasin":"South Fork Clearwater"},"CLWTRP":{"Subbasin":"Clearwater"},"COLR":{"Subbasin":""},"COLR1":{"Subbasin":"Lower Columbia"},"COLR2":{"Subbasin":"Lower Columbia-Clatskanie"},"COLR3":{"Subbasin":"Lower Columbia-Sandy"},"COLR4":{"Subbasin":"Middle Columbia-Hood"},"COLR5":{"Subbasin":"Middle Columbia-Lake Wallula"},"COLR6":{"Subbasin":"Upper Columbia-Priest Rapids"},"COLR7":{"Subbasin":"Upper Columbia-Entiat"},"COLR8":{"Subbasin":"Chief Joseph"},"COLR9":{"Subbasin":"Franklin D. Roosevelt Lake"},"COLTC":{"Subbasin":"Lochsa"},"COLTKC":{"Subbasin":"Lochsa"},"COLVLE":{"Subbasin":"Colville"},"COONSC":{"Subbasin":"Umatilla"},"COPPEC":{"Subbasin":"Walla Walla"},"CORRAC":{"Subbasin":"Clearwater"},"COTN2C":{"Subbasin":"North Fork John Day"},"COTNWC":{"Subbasin":"Clearwater"},"COTP":{"Subbasin":"Lower Grande Ronde"},"COTTWC":{"Subbasin":"Umatilla"},"COUG2C":{"Subbasin":"Clearwater"},"COUGRC":{"Subbasin":"Lower Grande Ronde"},"COULTC":{"Subbasin":"Wenatchee"},"COULTP":{"Subbasin":"Wenatchee"},"COW2C":{"Subbasin":"Lemhi"},"COWCR":{"Subbasin":"Imnaha"},"COWEAP":{"Subbasin":"Lower Cowlitz"},"COWEER":{"Subbasin":"Lower Cowlitz"},"COWICC":{"Subbasin":"Naches"},"COWISF":{"Subbasin":"Naches"},"COWLR1":{"Subbasin":"Lower Cowlitz"},"COWLR2":{"Subbasin":"Upper Cowlitz"},"COWS":{"Subbasin":"Lower Cowlitz"},"COWT":{"Subbasin":"Lower Cowlitz"},"COYO2C":{"Subbasin":"Middle Fork John Day"},"COYOTC":{"Subbasin":"Umatilla"},"CRABP":{"Subbasin":"Lewis"},"CRAZYC":{"Subbasin":"Imnaha"},"CRESCB":{"Subbasin":"Upper Columbia-Entiat"},"CRESIS":{"Subbasin":"Middle Columbia-Lake Wallula"},"CROO2C":{"Subbasin":"Lower Middle Fork Salmon"},"CROOC":{"Subbasin":"Upper Salmon"},"CROOK1":{"Subbasin":"Lower Crooked"},"CROOKC":{"Subbasin":"Lochsa"},"CROOKP":{"Subbasin":"South Fork Clearwater"},"CROOKR":{"Subbasin":"South Fork Clearwater"},"CROP":{"Subbasin":"South Fork Clearwater"},"CROTRP":{"Subbasin":"South Fork Clearwater"},"CROW":{"Subbasin":"South Fork Clearwater"},"CROWC":{"Subbasin":"Naches"},"CRTRAP":{"Subbasin":"Lake Washington"},"CRUIKS":{"Subbasin":"Lemhi"},"CTWD3C":{"Subbasin":"Lower Grande Ronde"},"CUBC":{"Subbasin":"Clackamas"},"CUNNSL":{"Subbasin":"Lower Willamette"},"CURP":{"Subbasin":"Lower Snake-Tucannon"},"DAGGEC":{"Subbasin":"Upper Middle Fork Salmon"},"DAVISC":{"Subbasin":"Middle Fork John Day"},"DAYP":{"Subbasin":"Walla Walla"},"DEAD2C":{"Subbasin":"Lower Snake-Tucannon"},"DEAD3C":{"Subbasin":"Kettle"},"DEADMC":{"Subbasin":"Lochsa"},"DEADNF":{"Subbasin":"Kettle"},"DECKEC":{"Subbasin":"Upper Salmon"},"DEEPCK":{"Subbasin":"Franklin D. Roosevelt Lake"},"DEERC":{"Subbasin":"Lemhi"},"DESCH1":{"Subbasin":"Lower Deschutes"},"DESCH2":{"Subbasin":"Upper Deschutes"},"DET":{"Subbasin":"North Santiam"},"DETFBY":{"Subbasin":"North Santiam"},"DETTAL":{"Subbasin":"North Santiam"},"DEX":{"Subbasin":"Middle Fork Willamette"},"DEXTAL":{"Subbasin":"Middle Fork Willamette"},"DHORNC":{"Subbasin":"Middle Fork John Day"},"DILACC":{"Subbasin":"Klickitat"},"DOGRVR":{"Subbasin":"Middle Columbia-Hood"},"DRANOL":{"Subbasin":"Middle Columbia-Hood"},"DRIFTC":{"Subbasin":"Lewis"},"DRNP":{"Subbasin":"Lower Columbia"},"DRY":{"Subbasin":"Wenatchee"},"DRY2C":{"Subbasin":"Imnaha"},"DRY3C":{"Subbasin":"Lower Yakima"},"DRYC":{"Subbasin":"Middle Columbia-Hood"},"DRYFBY":{"Subbasin":"Wenatchee"},"DRYFCC":{"Subbasin":"Middle Fork John Day"},"DRYP":{"Subbasin":"Wenatchee"},"DRYTAL":{"Subbasin":"Wenatchee"},"DUNCAN":{"Subbasin":"Upper John Day"},"DWOR":{"Subbasin":"Clearwater"},"DWORMS":{"Subbasin":"Clearwater"},"DWORNF":{"Subbasin":"Lower North Fork Clearwater"},"EAG2NF":{"Subbasin":"Clackamas"},"EAGH":{"Subbasin":"Clackamas"},"EAGL":{"Subbasin":"Lower Boise"},"EAGL2C":{"Subbasin":"Clackamas"},"EAGLEC":{"Subbasin":"Upper Selway"},"EARLWC":{"Subbasin":"Methow"},"EASTOP":{"Subbasin":"Upper Yakima"},"EBNK":{"Subbasin":"Upper Columbia-Entiat"},"EDEERC":{"Subbasin":"Kettle"},"EFHORC":{"Subbasin":"Mckenzie"},"EFPTRP":{"Subbasin":"Clearwater"},"EFPW":{"Subbasin":"Clearwater"},"EIGH2C":{"Subbasin":"Middle Columbia-Hood"},"EIGHTC":{"Subbasin":"Methow"},"ELDORC":{"Subbasin":"Clearwater"},"ELK2C":{"Subbasin":"South Fork Salmon"},"ELK3C":{"Subbasin":"Upper Salmon"},"ELKC":{"Subbasin":"Upper Middle Fork Salmon"},"ELRH":{"Subbasin":"Lower Columbia-Clatskanie"},"ENTH":{"Subbasin":"Upper Columbia-Entiat"},"ENTIAR":{"Subbasin":"Upper Columbia-Entiat"},"ESANIS":{"Subbasin":"Lower Columbia"},"ETIENC":{"Subbasin":"Wenatchee"},"FAL":{"Subbasin":"Middle Fork Willamette"},"FALL2C":{"Subbasin":"Middle Fork Willamette"},"FALLC":{"Subbasin":"Upper Middle Fork Salmon"},"FALTAL":{"Subbasin":"Middle Fork Willamette"},"FDD":{"Subbasin":"Umatilla"},"FDDFBY":{"Subbasin":"Umatilla"},"FDDTAL":{"Subbasin":"Umatilla"},"FEATHC":{"Subbasin":"Clearwater"},"FEEDCN":{"Subbasin":"Umatilla"},"FIRSTC":{"Subbasin":"Upper Yakima"},"FISHC":{"Subbasin":"Lochsa"},"FISHEC":{"Subbasin":"Upper Salmon"},"FISTRP":{"Subbasin":"Lochsa"},"FITSUC":{"Subbasin":"South Fork Salmon"},"FIVE2C":{"Subbasin":"Middle Columbia-Hood"},"FIVEMC":{"Subbasin":"South Fork Clearwater"},"FLATC":{"Subbasin":"South Fork Salmon"},"FLOSSC":{"Subbasin":"Middle Salmon-Chamberlain"},"FLUMEC":{"Subbasin":"Lemhi"},"FOGDEW":{"Subbasin":"Methow"},"FOS":{"Subbasin":"South Santiam"},"FOSFBY":{"Subbasin":"South Santiam"},"FOSTAL":{"Subbasin":"South Santiam"},"FOSTC":{"Subbasin":"Chief Joseph"},"FOUNDI":{"Subbasin":"Middle Columbia-Lake Wallula"},"FOXC":{"Subbasin":"North Fork John Day"},"FREEZC":{"Subbasin":"Imnaha"},"FRENCC":{"Subbasin":"Upper Salmon"},"FRENCH":{"Subbasin":"Lower Salmon"},"GABLEC":{"Subbasin":"Lower John Day"},"GATEC":{"Subbasin":"Wenatchee"},"GEDCWF":{"Subbasin":"Lower Selway"},"GEDNEC":{"Subbasin":"Lower Selway"},"GEECR":{"Subbasin":"Lower Columbia-Clatskanie"},"GEORGC":{"Subbasin":"Lower Snake-Asotin"},"GERMC":{"Subbasin":"Lower Columbia-Clatskanie"},"GOATC":{"Subbasin":"South Fork Salmon"},"GOATWP":{"Subbasin":"Methow"},"GOLD2C":{"Subbasin":"Methow"},"GOLD3C":{"Subbasin":"Sanpoil"},"GOLD4C":{"Subbasin":"Colville"},"GOLDC":{"Subbasin":"Upper Salmon"},"GOOS2I":{"Subbasin":"Upper Columbia-Priest Rapids"},"GOOSEI":{"Subbasin":"Lower Snake"},"GRAND1":{"Subbasin":"Lower Grande Ronde"},"GRAND2":{"Subbasin":"Upper Grande Ronde"},"GRANDP":{"Subbasin":"Upper Grande Ronde"},"GRANDR":{"Subbasin":""},"GRANDW":{"Subbasin":"Upper Grande Ronde"},"GRAYH":{"Subbasin":"Grays Harbor"},"GRAYSR":{"Subbasin":"Lower Columbia"},"GRBLDC":{"Subbasin":"Middle Fork John Day"},"GREENR":{"Subbasin":"Lower Cowlitz"},"GREEPC":{"Subbasin":"Middle Columbia-Hood"},"GRNTRP":{"Subbasin":"Lower Grande Ronde"},"GROUSC":{"Subbasin":"South Fork Salmon"},"GUMBTC":{"Subbasin":"Imnaha"},"HADENC":{"Subbasin":"Sanpoil"},"HADESF":{"Subbasin":"Sanpoil"},"HAGE":{"Subbasin":"Upper Snake-Rock"},"HALLC":{"Subbasin":"Franklin D. Roosevelt Lake"},"HANGC":{"Subbasin":"Hangman"},"HANSPC":{"Subbasin":"Methow"},"HANTWN":{"Subbasin":"Upper Columbia-Priest Rapids"},"HANWTB":{"Subbasin":"Upper Columbia-Priest Rapids"},"HARDC":{"Subbasin":"Little Salmon"},"HATRCK":{"Subbasin":"Middle Columbia-Lake Wallula"},"HAWLYC":{"Subbasin":"Lemhi"},"HAYDEF":{"Subbasin":"Lemhi"},"HAYDNC":{"Subbasin":"Lemhi"},"HAYNSC":{"Subbasin":"Lemhi"},"HAZARC":{"Subbasin":"Little Salmon"},"HCD":{"Subbasin":"Hells Canyon"},"HCDTAL":{"Subbasin":"Hells Canyon"},"HCR":{"Subbasin":"Middle Fork Willamette"},"HCRFBY":{"Subbasin":"Middle Fork Willamette"},"HCRREG":{"Subbasin":"Middle Fork Willamette"},"HCRTUR":{"Subbasin":"Middle Fork Willamette"},"HELLRC":{"Subbasin":"Upper Salmon"},"HERDC":{"Subbasin":"Upper Salmon"},"HERMAC":{"Subbasin":"Middle Columbia-Hood"},"HINDOC":{"Subbasin":"Naches"},"HLK":{"Subbasin":"Middle Columbia-Hood"},"HLKTAL":{"Subbasin":"Middle Columbia-Hood"},"HOGIS":{"Subbasin":"Clearwater"},"HOODEF":{"Subbasin":"Middle Columbia-Hood"},"HOODMF":{"Subbasin":"Middle Columbia-Hood"},"HOODR":{"Subbasin":"Middle Columbia-Hood"},"HOODWF":{"Subbasin":"Middle Columbia-Hood"},"HORS2C":{"Subbasin":"Mckenzie"},"HORS3C":{"Subbasin":"Imnaha"},"HORSEC":{"Subbasin":"Middle Salmon-Chamberlain"},"HUCKLC":{"Subbasin":"Upper Salmon"},"HUNGC":{"Subbasin":"Lochsa"},"HYDTRP":{"Subbasin":"Lemhi"},"I-90B":{"Subbasin":"Upper Columbia-Entiat"},"ICICLC":{"Subbasin":"Wenatchee"},"ICTRAP":{"Subbasin":"Lake Washington"},"IHR":{"Subbasin":"Lower Snake"},"IHRBYP":{"Subbasin":"Lower Snake"},"IHRCOL":{"Subbasin":"Lower Snake"},"IHRSPF":{"Subbasin":"Lower Snake"},"IHRSPL":{"Subbasin":"Lower Snake"},"IHRTAL":{"Subbasin":"Lower Snake"},"IHRTRB":{"Subbasin":"Lower Snake"},"IMNAHR":{"Subbasin":"Imnaha"},"IMNAHW":{"Subbasin":"Imnaha"},"IMNTRP":{"Subbasin":"Imnaha"},"IMQP":{"Subbasin":"Umatilla"},"INDI2C":{"Subbasin":"Upper Columbia-Entiat"},"INDIAC":{"Subbasin":"Upper Middle Fork Salmon"},"INDINC":{"Subbasin":"Upper Yakima"},"INKANC":{"Subbasin":"Okanogan"},"IRON2C":{"Subbasin":"Sanpoil"},"IRONC":{"Subbasin":"Middle Salmon-Panther"},"IRRI":{"Subbasin":"Middle Columbia-Lake Wallula"},"IS18":{"Subbasin":"Upper Columbia-Priest Rapids"},"JACK2C":{"Subbasin":"Wenatchee"},"JACKC":{"Subbasin":"Upper Yakima"},"JACKCP":{"Subbasin":"Upper Yakima"},"JACKSC":{"Subbasin":"Clearwater"},"JDA":{"Subbasin":"Middle Columbia-Hood"},"JDABYP":{"Subbasin":"Middle Columbia-Hood"},"JDACOL":{"Subbasin":"Middle Columbia-Hood"},"JDAFBY":{"Subbasin":"Middle Columbia-Hood"},"JDAGAT":{"Subbasin":"Middle Columbia-Hood"},"JDAGWL":{"Subbasin":"Middle Columbia-Hood"},"JDALD1":{"Subbasin":"Middle Columbia-Hood"},"JDALD2":{"Subbasin":"Middle Columbia-Hood"},"JDAMRT":{"Subbasin":"Middle Columbia-Hood"},"JDAR":{"Subbasin":""},"JDAR1":{"Subbasin":"Lower John Day"},"JDAR2":{"Subbasin":"Upper John Day"},"JDARMF":{"Subbasin":"Middle Fork John Day"},"JDARNF":{"Subbasin":"North Fork John Day"},"JDARRR":{"Subbasin":"Middle Columbia-Hood"},"JDARSF":{"Subbasin":"Upper John Day"},"JDATAL":{"Subbasin":"Middle Columbia-Hood"},"JERSEC":{"Subbasin":"Middle Salmon-Chamberlain"},"JNSCAS":{"Subbasin":"Middle Columbia-Hood"},"JOHN2C":{"Subbasin":"Okanogan"},"JOHNC":{"Subbasin":"South Fork Clearwater"},"JOHNSC":{"Subbasin":"South Fork Salmon"},"JOHTRP":{"Subbasin":"South Fork Salmon"},"JOSEPC":{"Subbasin":"Lower Grande Ronde"},"JSFBC":{"Subbasin":"Upper John Day"},"JSFDC":{"Subbasin":"Upper John Day"},"JSFMC":{"Subbasin":"Upper John Day"},"JSFWC":{"Subbasin":"Upper John Day"},"JUNGLC":{"Subbasin":"Upper Yakima"},"KALA":{"Subbasin":"Lower Columbia-Clatskanie"},"KALAMR":{"Subbasin":"Lower Columbia-Clatskanie"},"KENYC":{"Subbasin":"Lemhi"},"KETTLR":{"Subbasin":"Kettle"},"KLICKR":{"Subbasin":"Klickitat"},"KLIH":{"Subbasin":"Klickitat"},"KLMTHR":{"Subbasin":""},"KNAPPC":{"Subbasin":"Upper Middle Fork Salmon"},"KNOXB":{"Subbasin":"South Fork Salmon"},"KOOS":{"Subbasin":"Middle Fork Clearwater"},"KOTH":{"Subbasin":""},"LAKE2C":{"Subbasin":"Upper Deschutes"},"LAKE3C":{"Subbasin":"Upper Columbia-Entiat"},"LAKEBR":{"Subbasin":"Middle Columbia-Hood"},"LAKEC":{"Subbasin":"South Fork Salmon"},"LAPC":{"Subbasin":"Clearwater"},"LASTC":{"Subbasin":"Clackamas"},"LAURLK":{"Subbasin":"Middle Columbia-Hood"},"LBCWF":{"Subbasin":"Clearwater"},"LBEARC":{"Subbasin":"Clearwater"},"LBLDRC":{"Subbasin":"Kettle"},"LBOULC":{"Subbasin":"Clearwater"},"LBRIC":{"Subbasin":"Methow"},"LCATHC":{"Subbasin":"Upper Grande Ronde"},"LEA":{"Subbasin":"Mckenzie"},"LEAB":{"Subbasin":"Mckenzie"},"LEABYP":{"Subbasin":"Mckenzie"},"LEAFBY":{"Subbasin":"Mckenzie"},"LEATAL":{"Subbasin":"Mckenzie"},"LEAV":{"Subbasin":"Wenatchee"},"LEB":{"Subbasin":"South Santiam"},"LEBFBY":{"Subbasin":"South Santiam"},"LEBLDS":{"Subbasin":"South Santiam"},"LEEC":{"Subbasin":"Lemhi"},"LEMHIR":{"Subbasin":"Lemhi"},"LEMHIW":{"Subbasin":"Lemhi"},"LEMONC":{"Subbasin":"Middle Fork John Day"},"LEMTRP":{"Subbasin":"Lemhi"},"LENLKE":{"Subbasin":"Banks Lake"},"LEOPOC":{"Subbasin":"Clearwater"},"LEWCLK":{"Subbasin":"Lower Columbia"},"LEWH":{"Subbasin":"Lewis"},"LEWIEF":{"Subbasin":"Lewis"},"LEWISP":{"Subbasin":"Lewis"},"LEWISR":{"Subbasin":"Lewis"},"LGR":{"Subbasin":"Lower Snake-Tucannon"},"LGRBPS":{"Subbasin":"Lower Snake-Tucannon"},"LGRBYP":{"Subbasin":"Lower Snake-Tucannon"},"LGRCOL":{"Subbasin":"Lower Snake-Tucannon"},"LGRDTG":{"Subbasin":"Lower Snake-Tucannon"},"LGRDWT":{"Subbasin":"Lower Snake-Tucannon"},"LGRFBY":{"Subbasin":"Lower Snake-Tucannon"},"LGRGAT":{"Subbasin":"Lower Snake-Tucannon"},"LGRGWL":{"Subbasin":"Lower Snake-Tucannon"},"LGRICE":{"Subbasin":"Lower Snake-Tucannon"},"LGRLDR":{"Subbasin":"Lower Snake-Tucannon"},"LGRMRT":{"Subbasin":"Lower Snake-Tucannon"},"LGROFL":{"Subbasin":"Lower Snake-Tucannon"},"LGRORI":{"Subbasin":"Lower Snake-Tucannon"},"LGRRBR":{"Subbasin":"Lower Snake-Tucannon"},"LGRRRR":{"Subbasin":"Lower Snake-Tucannon"},"LGRRTR":{"Subbasin":"Lower Snake-Tucannon"},"LGRRXR":{"Subbasin":"Lower Snake-Tucannon"},"LGRSEP":{"Subbasin":"Lower Snake-Tucannon"},"LGRSPL":{"Subbasin":"Lower Snake-Tucannon"},"LGRSTS":{"Subbasin":"Lower Snake-Tucannon"},"LGRTAL":{"Subbasin":"Lower Snake-Tucannon"},"LGRTRB":{"Subbasin":"Lower Snake-Tucannon"},"LGS":{"Subbasin":"Lower Snake-Tucannon"},"LGSBPS":{"Subbasin":"Lower Snake-Tucannon"},"LGSBYP":{"Subbasin":"Lower Snake-Tucannon"},"LGSCOL":{"Subbasin":"Lower Snake-Tucannon"},"LGSDTG":{"Subbasin":"Lower Snake-Tucannon"},"LGSDWT":{"Subbasin":"Lower Snake-Tucannon"},"LGSFBY":{"Subbasin":"Lower Snake-Tucannon"},"LGSGAT":{"Subbasin":"Lower Snake-Tucannon"},"LGSGWL":{"Subbasin":"Lower Snake-Tucannon"},"LGSICE":{"Subbasin":"Lower Snake-Tucannon"},"LGSMRT":{"Subbasin":"Lower Snake-Tucannon"},"LGSOFL":{"Subbasin":"Lower Snake-Tucannon"},"LGSORI":{"Subbasin":"Lower Snake-Tucannon"},"LGSRBR":{"Subbasin":"Lower Snake-Tucannon"},"LGSRRR":{"Subbasin":"Lower Snake-Tucannon"},"LGSRTR":{"Subbasin":"Lower Snake-Tucannon"},"LGSRXR":{"Subbasin":"Lower Snake-Tucannon"},"LGSSEP":{"Subbasin":"Lower Snake-Tucannon"},"LGSSPL":{"Subbasin":"Lower Snake-Tucannon"},"LGSSTS":{"Subbasin":"Lower Snake-Tucannon"},"LGSTAL":{"Subbasin":"Lower Snake-Tucannon"},"LGSTRB":{"Subbasin":"Lower Snake-Tucannon"},"LHOGIS":{"Subbasin":"Clearwater"},"LIBBYC":{"Subbasin":"Methow"},"LICK2C":{"Subbasin":"Imnaha"},"LICK3C":{"Subbasin":"Middle Fork John Day"},"LICKC":{"Subbasin":"South Fork Salmon"},"LINEC":{"Subbasin":"Umatilla"},"LIT8MC":{"Subbasin":"Lemhi"},"LITCAC":{"Subbasin":"Clearwater"},"LITNGC":{"Subbasin":"Imnaha"},"LITTLC":{"Subbasin":"Upper Yakima"},"LKLICR":{"Subbasin":"Klickitat"},"LLRTP":{"Subbasin":"Lemhi"},"LLSPRC":{"Subbasin":"Lemhi"},"LMEMIS":{"Subbasin":"Middle Columbia-Hood"},"LMILIS":{"Subbasin":"Middle Columbia-Hood"},"LMN":{"Subbasin":"Lower Snake"},"LMNBPS":{"Subbasin":"Lower Snake"},"LMNBYP":{"Subbasin":"Lower Snake"},"LMNCOL":{"Subbasin":"Lower Snake"},"LMNDTG":{"Subbasin":"Lower Snake"},"LMNDWT":{"Subbasin":"Lower Snake"},"LMNFBY":{"Subbasin":"Lower Snake"},"LMNGAT":{"Subbasin":"Lower Snake"},"LMNGWL":{"Subbasin":"Lower Snake"},"LMNICE":{"Subbasin":"Lower Snake"},"LMNMRT":{"Subbasin":"Lower Snake"},"LMNOFL":{"Subbasin":"Lower Snake"},"LMNORI":{"Subbasin":"Lower Snake"},"LMNRBR":{"Subbasin":"Lower Snake"},"LMNRRR":{"Subbasin":"Lower Snake"},"LMNRTR":{"Subbasin":"Lower Snake"},"LMNRXR":{"Subbasin":"Lower Snake"},"LMNSEP":{"Subbasin":"Lower Snake"},"LMNSPL":{"Subbasin":"Lower Snake"},"LMNSTS":{"Subbasin":"Lower Snake"},"LMNTAL":{"Subbasin":"Lower Snake"},"LMNTRB":{"Subbasin":"Lower Snake"},"LMONIS":{"Subbasin":"Lower Snake"},"LNSANR":{"Subbasin":"North Santiam"},"LOCHSA":{"Subbasin":"Lochsa"},"LOCTRP":{"Subbasin":"Lochsa"},"LOGANC":{"Subbasin":"Lower Middle Fork Salmon"},"LOGCC":{"Subbasin":"Klickitat"},"LOGYC":{"Subbasin":"Lower Yakima"},"LOLOC":{"Subbasin":"Clearwater"},"LONERC":{"Subbasin":"Lower John Day"},"LOOH":{"Subbasin":"Upper Grande Ronde"},"LOOKGC":{"Subbasin":"Upper Grande Ronde"},"LOONC":{"Subbasin":"Upper Middle Fork Salmon"},"LOONYC":{"Subbasin":"Sanpoil"},"LOP":{"Subbasin":"Middle Fork Willamette"},"LOPTAL":{"Subbasin":"Middle Fork Willamette"},"LOSTC":{"Subbasin":"Sanpoil"},"LOSTIP":{"Subbasin":"Wallowa"},"LOSTIR":{"Subbasin":"Wallowa"},"LOSTIW":{"Subbasin":"Wallowa"},"LOSTR":{"Subbasin":"Methow"},"LOUIEC":{"Subbasin":"Sanpoil"},"LOUPLC":{"Subbasin":"Okanogan"},"LRSNKC":{"Subbasin":"Naches"},"LSALR":{"Subbasin":"Little Salmon"},"LSFTRP":{"Subbasin":"South Fork Salmon"},"LSHEEC":{"Subbasin":"Imnaha"},"LSHEEF":{"Subbasin":"Imnaha"},"LTIMBC":{"Subbasin":"Lemhi"},"LTNACR":{"Subbasin":"Naches"},"LTNANF":{"Subbasin":"Naches"},"LUGUAF":{"Subbasin":"South Fork Clearwater"},"LUNION":{"Subbasin":"Lake Washington"},"LWBEAR":{"Subbasin":"Lake Washington"},"LWCEDR":{"Subbasin":"Lake Washington"},"LWD":{"Subbasin":"Walla Walla"},"LWDTAL":{"Subbasin":"Walla Walla"},"LWENAT":{"Subbasin":"Wenatchee"},"LWISSQ":{"Subbasin":"Lake Washington"},"LWSALR":{"Subbasin":"Middle Columbia-Hood"},"LWSCCL":{"Subbasin":"Lake Washington"},"LWSCFC":{"Subbasin":"Lake Washington"},"LWSCMC":{"Subbasin":"Lake Washington"},"LWSCML":{"Subbasin":"Lake Washington"},"LWSH":{"Subbasin":"Middle Columbia-Hood"},"LYFE":{"Subbasin":"Lower Snake"},"LYLFAT":{"Subbasin":"Klickitat"},"MADRVR":{"Subbasin":"Upper Columbia-Entiat"},"MAHOGC":{"Subbasin":"Imnaha"},"MANASC":{"Subbasin":"Upper Yakima"},"MANCRS":{"Subbasin":"Puget Sound"},"MARI":{"Subbasin":"North Santiam"},"MARIOC":{"Subbasin":"North Santiam"},"MARION":{"Subbasin":"Lower Yakima"},"MARSHC":{"Subbasin":"Upper Middle Fork Salmon"},"MARTR2":{"Subbasin":"Upper Middle Fork Salmon"},"MARTRP":{"Subbasin":"Upper Middle Fork Salmon"},"MASON":{"Subbasin":"Lewis"},"MAVA":{"Subbasin":"Upper Snake-Rock"},"MCCA":{"Subbasin":"North Fork Payette"},"MCCULC":{"Subbasin":"Imnaha"},"MCD":{"Subbasin":"Walla Walla"},"MCDEVC":{"Subbasin":"Lemhi"},"MCI":{"Subbasin":"Okanogan"},"MCITAL":{"Subbasin":"Okanogan"},"MCKA2C":{"Subbasin":"Lower Crooked"},"MCKAYC":{"Subbasin":"Umatilla"},"MCKE":{"Subbasin":"Mckenzie"},"MCKER":{"Subbasin":"Mckenzie"},"MCKESF":{"Subbasin":"Mckenzie"},"MCN":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNBPS":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNBYP":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNCOL":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNDTG":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNDWT":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNFBY":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNGAT":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNGWL":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNICE":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNLD1":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNMRT":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNOFL":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNORI":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNRBR":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNRRR":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNRTR":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNRXR":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNSEP":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNSPL":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNSRR":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNSTS":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNTAL":{"Subbasin":"Middle Columbia-Lake Wallula"},"MCNTRB":{"Subbasin":"Middle Columbia-Lake Wallula"},"MDSH":{"Subbasin":"Lower Yakima"},"MDVAP":{"Subbasin":"Methow"},"MEACHC":{"Subbasin":"Umatilla"},"MEACHE":{"Subbasin":"Umatilla"},"MEACHN":{"Subbasin":"Umatilla"},"MEAD2C":{"Subbasin":"South Fork Clearwater"},"MEADOC":{"Subbasin":"Lower Selway"},"MEGC":{"Subbasin":"Lower Columbia"},"MERH":{"Subbasin":"Lewis"},"METH":{"Subbasin":"Methow"},"METHR":{"Subbasin":"Methow"},"METOLR":{"Subbasin":"Upper Deschutes"},"METRO":{"Subbasin":"Lake Washington"},"METTRP":{"Subbasin":"Methow"},"MFD":{"Subbasin":"Lower Cowlitz"},"MFDFTF":{"Subbasin":"Lower Cowlitz"},"MFDLBN":{"Subbasin":"Lower Cowlitz"},"MFDLBS":{"Subbasin":"Lower Cowlitz"},"MFDSEP":{"Subbasin":"Lower Cowlitz"},"MFLBC":{"Subbasin":"Kettle"},"MHP":{"Subbasin":"Lewis"},"MHPFBY":{"Subbasin":"Lewis"},"MHPTAL":{"Subbasin":"Lewis"},"MILL2C":{"Subbasin":"South Fork Clearwater"},"MILL3C":{"Subbasin":"Middle Columbia-Hood"},"MILL4C":{"Subbasin":"Lower Columbia-Clatskanie"},"MILL5C":{"Subbasin":"Lemhi"},"MILLC":{"Subbasin":"Walla Walla"},"MINAMR":{"Subbasin":"Wallowa"},"MINKC":{"Subbasin":"Lower Selway"},"MINP":{"Subbasin":"Umatilla"},"MIS2EF":{"Subbasin":"Wenatchee"},"MISS2C":{"Subbasin":"Wenatchee"},"MISSC":{"Subbasin":"Clearwater"},"MISSNC":{"Subbasin":"Umatilla"},"MLAK2C":{"Subbasin":"Upper Deschutes"},"MLRSNI":{"Subbasin":"Lower Columbia"},"MOLALR":{"Subbasin":"Molalla-Pudding"},"MONCWF":{"Subbasin":"Lower Middle Fork Salmon"},"MONT":{"Subbasin":"Lake Washington"},"MONUMC":{"Subbasin":"Lower Middle Fork Salmon"},"MOONSC":{"Subbasin":"Umatilla"},"MOOS2C":{"Subbasin":"Lower Selway"},"MOOS2N":{"Subbasin":"Lower Selway"},"MOOS3C":{"Subbasin":"Clearwater"},"MOOSEC":{"Subbasin":"Middle Salmon-Chamberlain"},"MOSESC":{"Subbasin":"Sanpoil"},"MOYERC":{"Subbasin":"Middle Salmon-Panther"},"MPOTLC":{"Subbasin":"Clearwater"},"MSANTR":{"Subbasin":"South Santiam"},"MSKF":{"Subbasin":"Methow"},"MSLA2C":{"Subbasin":"Upper Deschutes"},"MUDDYP":{"Subbasin":"Lewis"},"MUDDYR":{"Subbasin":"Lewis"},"MULTCH":{"Subbasin":"Lower Willamette"},"MURDSF":{"Subbasin":"Upper John Day"},"MUSCRC":{"Subbasin":"Middle Salmon-Panther"},"MVFLAP":{"Subbasin":"Middle Columbia-Hood"},"MXWLCN":{"Subbasin":"Umatilla"},"NAF":{"Subbasin":"Wenatchee"},"NAPEEC":{"Subbasin":"Wenatchee"},"NASONC":{"Subbasin":"Wenatchee"},"NATCHR":{"Subbasin":"Naches"},"NBG":{"Subbasin":"Walla Walla"},"NBGFBY":{"Subbasin":"Walla Walla"},"NBGTAL":{"Subbasin":"Walla Walla"},"NEALC":{"Subbasin":"Middle Columbia-Hood"},"NESPR":{"Subbasin":"Chief Joseph"},"NEWSOC":{"Subbasin":"South Fork Clearwater"},"NFCHEW":{"Subbasin":"Colville"},"NFLBC":{"Subbasin":"Kettle"},"NFSTRP":{"Subbasin":"Middle Salmon-Panther"},"NFTEAN":{"Subbasin":"Upper Yakima"},"NILEC":{"Subbasin":"Lower Yakima"},"NISP":{"Subbasin":"Upper Snake-Rock"},"NLVP":{"Subbasin":"Clearwater"},"NNANAC":{"Subbasin":"Sanpoil"},"NONE":{"Subbasin":""},"NPTH":{"Subbasin":"Clearwater"},"NSANTR":{"Subbasin":"North Santiam"},"NSCAPC":{"Subbasin":"Lower Willamette"},"OAKC":{"Subbasin":"Naches"},"OASP":{"Subbasin":"Lower Deschutes"},"OCEAN":{"Subbasin":""},"OCHOCC":{"Subbasin":"Lower Crooked"},"OHARAC":{"Subbasin":"Lower Selway"},"OKANR":{"Subbasin":"Okanogan"},"OKRCRY":{"Subbasin":"Okanogan"},"OLDMAC":{"Subbasin":"Lochsa"},"OMAKC":{"Subbasin":"Okanogan"},"OMAKP":{"Subbasin":"Okanogan"},"ONAF":{"Subbasin":"Okanogan"},"ONIONC":{"Subbasin":"Franklin D. Roosevelt Lake"},"OROFC":{"Subbasin":"Clearwater"},"OSOYBR":{"Subbasin":"Okanogan"},"OSOYHA":{"Subbasin":"Okanogan"},"OSOYOL":{"Subbasin":"Okanogan"},"OXBH":{"Subbasin":"Middle Columbia-Hood"},"OXBO":{"Subbasin":"Brownlee Reservoir"},"PAHH":{"Subbasin":"Pahsimeroi"},"PAHP":{"Subbasin":"Pahsimeroi"},"PAHSIR":{"Subbasin":"Pahsimeroi"},"PAHSIW":{"Subbasin":"Pahsimeroi"},"PAHTRP":{"Subbasin":"Pahsimeroi"},"PANT2C":{"Subbasin":"Middle Columbia-Hood"},"PANTHC":{"Subbasin":"Middle Salmon-Panther"},"PAPOOC":{"Subbasin":"Lochsa"},"PARK":{"Subbasin":"Middle Columbia-Hood"},"PARTRC":{"Subbasin":"Lower Salmon"},"PATAHC":{"Subbasin":"Lower Snake-Tucannon"},"PATITC":{"Subbasin":"Walla Walla"},"PATTEC":{"Subbasin":"Lemhi"},"PEARSC":{"Subbasin":"Umatilla"},"PELTON":{"Subbasin":"Lower Deschutes"},"PENAWC":{"Subbasin":"Lower Snake-Tucannon"},"PENP":{"Subbasin":"Umatilla"},"PER":{"Subbasin":"Lower Deschutes"},"PERAFT":{"Subbasin":"Lower Deschutes"},"PERTAL":{"Subbasin":"Lower Deschutes"},"PESHAR":{"Subbasin":"Wenatchee"},"PETEKC":{"Subbasin":"Lochsa"},"PETTL":{"Subbasin":"Upper Salmon"},"PETTLC":{"Subbasin":"Upper Salmon"},"PHOEBC":{"Subbasin":"South Fork Salmon"},"PIAHC":{"Subbasin":"South Fork Salmon"},"PINE2C":{"Subbasin":"Clearwater"},"PINEC":{"Subbasin":"Walla Walla"},"PINHC":{"Subbasin":"Clackamas"},"PISTOC":{"Subbasin":"Upper Middle Fork Salmon"},"PIVASC":{"Subbasin":"Clearwater"},"PLAP":{"Subbasin":"Hells Canyon"},"POISNC":{"Subbasin":"Middle Salmon-Panther"},"POLEC":{"Subbasin":"Upper Salmon"},"POSTOC":{"Subbasin":"Lochsa"},"POTATC":{"Subbasin":"Upper Columbia-Entiat"},"POTHOL":{"Subbasin":"Lower Crab"},"POTR":{"Subbasin":"Clearwater"},"POTREF":{"Subbasin":"Clearwater"},"POTRWF":{"Subbasin":"Clearwater"},"POWP":{"Subbasin":"Lochsa"},"PRATTC":{"Subbasin":"Lemhi"},"PRD":{"Subbasin":"Upper Columbia-Priest Rapids"},"PRDFBY":{"Subbasin":"Upper Columbia-Priest Rapids"},"PRDGWL":{"Subbasin":"Upper Columbia-Priest Rapids"},"PRDH":{"Subbasin":"Upper Columbia-Priest Rapids"},"PRDLD1":{"Subbasin":"Upper Columbia-Priest Rapids"},"PRDMRT":{"Subbasin":"Upper Columbia-Priest Rapids"},"PRDTAL":{"Subbasin":"Upper Columbia-Priest Rapids"},"PRO":{"Subbasin":"Lower Yakima"},"PROFBY":{"Subbasin":"Lower Yakima"},"PROH":{"Subbasin":"Lower Yakima"},"PROSRD":{"Subbasin":"Lower Yakima"},"PROSRR":{"Subbasin":"Lower Yakima"},"PROTAL":{"Subbasin":"Lower Yakima"},"PROTRP":{"Subbasin":"Lower Yakima"},"PURDUC":{"Subbasin":"Clearwater"},"PWD":{"Subbasin":"Middle Columbia-Hood"},"PWDFBY":{"Subbasin":"Middle Columbia-Hood"},"QKASPC":{"Subbasin":"Lemhi"},"QRTZC":{"Subbasin":"Naches"},"RAMSYC":{"Subbasin":"Middle Columbia-Hood"},"RAPH":{"Subbasin":"Little Salmon"},"RAPIDR":{"Subbasin":"Little Salmon"},"RAPIWF":{"Subbasin":"Little Salmon"},"RAPR":{"Subbasin":"Upper Middle Fork Salmon"},"RATTLC":{"Subbasin":"Middle Columbia-Hood"},"RCK5RF":{"Subbasin":"Naches"},"REDFL":{"Subbasin":"Upper Salmon"},"REDFLC":{"Subbasin":"Upper Salmon"},"REDMOC":{"Subbasin":"Imnaha"},"REDP":{"Subbasin":"South Fork Clearwater"},"REDR":{"Subbasin":"South Fork Clearwater"},"REDRSF":{"Subbasin":"South Fork Clearwater"},"REDTRP":{"Subbasin":"South Fork Clearwater"},"REECEC":{"Subbasin":"Upper Yakima"},"RELIEC":{"Subbasin":"South Fork Clearwater"},"RESVRC":{"Subbasin":"Lemhi"},"RGRSPC":{"Subbasin":"Middle Columbia-Hood"},"RI2BYP":{"Subbasin":"Upper Columbia-Entiat"},"RICEC":{"Subbasin":"South Fork Salmon"},"RICEIS":{"Subbasin":"Lower Columbia"},"RICHIS":{"Subbasin":"Upper Columbia-Priest Rapids"},"RINH":{"Subbasin":"Upper Columbia-Priest Rapids"},"RIS":{"Subbasin":"Upper Columbia-Entiat"},"RISFWC":{"Subbasin":"Upper Columbia-Entiat"},"RISMRT":{"Subbasin":"Upper Columbia-Entiat"},"RISTAL":{"Subbasin":"Upper Columbia-Entiat"},"RIVERP":{"Subbasin":"Okanogan"},"RLCTRP":{"Subbasin":"Upper Salmon"},"ROARC":{"Subbasin":"Upper Columbia-Entiat"},"ROBU":{"Subbasin":"Lower Deschutes"},"ROCK2C":{"Subbasin":"Middle Columbia-Lake Wallula"},"ROCK3C":{"Subbasin":"Wenatchee"},"ROCK4C":{"Subbasin":"Lower John Day"},"ROCK5C":{"Subbasin":"Naches"},"ROCKC":{"Subbasin":"Lewis"},"ROCKIS":{"Subbasin":"Middle Columbia-Lake Wallula"},"ROGUER":{"Subbasin":""},"ROLFIP":{"Subbasin":"Wenatchee"},"ROSAD":{"Subbasin":"Upper Yakima"},"ROU":{"Subbasin":"Lower Deschutes"},"ROUFTF":{"Subbasin":"Lower Deschutes"},"ROUTAL":{"Subbasin":"Lower Deschutes"},"ROZ":{"Subbasin":"Upper Yakima"},"ROZBYP":{"Subbasin":"Upper Yakima"},"ROZFBY":{"Subbasin":"Upper Yakima"},"ROZLDR":{"Subbasin":"Upper Yakima"},"ROZTAL":{"Subbasin":"Upper Yakima"},"RPDTRP":{"Subbasin":"Little Salmon"},"RRE":{"Subbasin":"Upper Columbia-Entiat"},"RREBYP":{"Subbasin":"Upper Columbia-Entiat"},"RRERRR":{"Subbasin":"Upper Columbia-Entiat"},"RRETAL":{"Subbasin":"Upper Columbia-Entiat"},"RSNAKC":{"Subbasin":"Naches"},"RSNANF":{"Subbasin":"Naches"},"RSSNIS":{"Subbasin":"Lower Columbia"},"RUBYC":{"Subbasin":"South Fork Salmon"},"RUNNIC":{"Subbasin":"Upper Selway"},"RUSHC":{"Subbasin":"Lower Middle Fork Salmon"},"RUSHWF":{"Subbasin":"Lower Middle Fork Salmon"},"RYANC":{"Subbasin":"Umatilla"},"SABEC":{"Subbasin":"Middle Salmon-Chamberlain"},"SACRMR":{"Subbasin":""},"SAEFSF":{"Subbasin":"South Fork Salmon"},"SALEFT":{"Subbasin":"Upper Salmon"},"SALEFW":{"Subbasin":"Upper Salmon"},"SALMF1":{"Subbasin":"Lower Middle Fork Salmon"},"SALMF2":{"Subbasin":"Upper Middle Fork Salmon"},"SALMOC":{"Subbasin":"Okanogan"},"SALR":{"Subbasin":""},"SALR1":{"Subbasin":"Lower Salmon"},"SALR2":{"Subbasin":"Middle Salmon-Chamberlain"},"SALR3":{"Subbasin":"Middle Salmon-Panther"},"SALR4":{"Subbasin":"Upper Salmon"},"SALREF":{"Subbasin":"Upper Salmon"},"SALRMF":{"Subbasin":"Lower Middle Fork Salmon"},"SALRNF":{"Subbasin":"Middle Salmon-Panther"},"SALRSF":{"Subbasin":"South Fork Salmon"},"SALSFW":{"Subbasin":"South Fork Salmon"},"SALTC":{"Subbasin":"Imnaha"},"SALTRP":{"Subbasin":"Lower Salmon"},"SANPR":{"Subbasin":"Sanpoil"},"SANPWF":{"Subbasin":"Sanpoil"},"SANTIR":{"Subbasin":"North Santiam"},"SATUSC":{"Subbasin":"Lower Yakima"},"SAWT":{"Subbasin":"Upper Salmon"},"SAWTRP":{"Subbasin":"Upper Salmon"},"SCAPPB":{"Subbasin":"Lower Willamette"},"SCAPPC":{"Subbasin":"Lower Willamette"},"SCHAFC":{"Subbasin":"Klickitat"},"SECESR":{"Subbasin":"South Fork Salmon"},"SECTRP":{"Subbasin":"South Fork Salmon"},"SELWY1":{"Subbasin":"Lower Selway"},"SELWY2":{"Subbasin":"Upper Selway"},"SELWYR":{"Subbasin":""},"SERH":{"Subbasin":"Lower Columbia"},"SFCHEW":{"Subbasin":"Colville"},"SFLBC":{"Subbasin":"Kettle"},"SFSRKT":{"Subbasin":"South Fork Salmon"},"SFSTRP":{"Subbasin":"South Fork Salmon"},"SGOLDC":{"Subbasin":"Methow"},"SHEEPC":{"Subbasin":"Middle Salmon-Chamberlain"},"SHEPC":{"Subbasin":"Lower Middle Fork Salmon"},"SHERFT":{"Subbasin":"Lower Deschutes"},"SHIMC":{"Subbasin":"Umatilla"},"SHINGC":{"Subbasin":"Okanogan"},"SHP":{"Subbasin":"Lewis"},"SHPFBY":{"Subbasin":"Lewis"},"SHPTAL":{"Subbasin":"Lewis"},"SHTIKC":{"Subbasin":"Lower Deschutes"},"SHUTTC":{"Subbasin":"Okanogan"},"SILVEC":{"Subbasin":"Upper Columbia-Entiat"},"SIMCNF":{"Subbasin":"Lower Yakima"},"SIMCOC":{"Subbasin":"Lower Yakima"},"SIMILP":{"Subbasin":"Similkameen"},"SIMILR":{"Subbasin":"Similkameen"},"SIMP":{"Subbasin":"Similkameen"},"SKA":{"Subbasin":"Okanogan"},"SKAHAL":{"Subbasin":"Okanogan"},"SKAM":{"Subbasin":"Lower Columbia-Sandy"},"SKATAL":{"Subbasin":"Okanogan"},"SKIPAR":{"Subbasin":"Lower Columbia"},"SKIPAW":{"Subbasin":"Lower Columbia"},"SKOKNF":{"Subbasin":"Skokomish"},"SLAT2C":{"Subbasin":"Upper Salmon"},"SLATEC":{"Subbasin":"Lower Salmon"},"SLFTIS":{"Subbasin":"Lost"},"SMILEC":{"Subbasin":"Upper Salmon"},"SMITHC":{"Subbasin":"Lower Middle Fork Salmon"},"SNAKE1":{"Subbasin":"Lower Snake"},"SNAKE2":{"Subbasin":"Lower Snake-Tucannon"},"SNAKE3":{"Subbasin":"Lower Snake-Asotin"},"SNAKE4":{"Subbasin":"Hells Canyon"},"SNAKER":{"Subbasin":""},"SNANAC":{"Subbasin":"Sanpoil"},"SNDTAP":{"Subbasin":"Middle Columbia-Hood"},"SNKTRP":{"Subbasin":"Lower Snake-Asotin"},"SNOSLC":{"Subbasin":"Lower Middle Fork Salmon"},"SNYDEC":{"Subbasin":"Klickitat"},"SPALD":{"Subbasin":"Clearwater"},"SPOKR1":{"Subbasin":"Lower Spokane"},"SPOKR2":{"Subbasin":"Upper Spokane"},"SPRAGL":{"Subbasin":"Palouse"},"SPRC":{"Subbasin":"Middle Columbia-Hood"},"SPRF":{"Subbasin":"American Falls"},"SQAW2C":{"Subbasin":"Upper Salmon"},"SQAW3C":{"Subbasin":"Middle Columbia-Lake Wallula"},"SQAW4C":{"Subbasin":"Middle Fork John Day"},"SQAWC":{"Subbasin":"Umatilla"},"SQUAWC":{"Subbasin":"Lochsa"},"SQUAWP":{"Subbasin":"Upper Salmon"},"SSANTR":{"Subbasin":"South Santiam"},"SSD":{"Subbasin":"Lower Yakima"},"SSDSRR":{"Subbasin":"Lower Yakima"},"SSDTAL":{"Subbasin":"Lower Yakima"},"SSIDEC":{"Subbasin":"Lower Yakima"},"SSIDES":{"Subbasin":"Lower Yakima"},"STAFFC":{"Subbasin":"Upper Yakima"},"STANLC":{"Subbasin":"Upper Salmon"},"STANLE":{"Subbasin":"Upper Salmon"},"STAPAC":{"Subbasin":"Okanogan"},"STFH":{"Subbasin":"Lower Spokane"},"STMARP":{"Subbasin":"Okanogan"},"STOLP":{"Subbasin":"South Fork Salmon"},"STOR2C":{"Subbasin":"Upper Columbia-Entiat"},"STORMC":{"Subbasin":"Lochsa"},"SUGARC":{"Subbasin":"South Fork Salmon"},"SUL":{"Subbasin":"Middle Willamette"},"SULBPS":{"Subbasin":"Middle Willamette"},"SULBYP":{"Subbasin":"Middle Willamette"},"SULFBY":{"Subbasin":"Middle Willamette"},"SULFDS":{"Subbasin":"Middle Willamette"},"SULFUC":{"Subbasin":"Upper Middle Fork Salmon"},"SULSEP":{"Subbasin":"Middle Willamette"},"SULTRB":{"Subbasin":"Middle Willamette"},"SUMI2C":{"Subbasin":"Middle Fork John Day"},"SUMI3C":{"Subbasin":"Klickitat"},"SUMITC":{"Subbasin":"South Fork Salmon"},"SWALEC":{"Subbasin":"Klickitat"},"SWAUKC":{"Subbasin":"Upper Yakima"},"SWEETC":{"Subbasin":"Clearwater"},"SWLWPK":{"Subbasin":"Lower Snake-Asotin"},"SWSP":{"Subbasin":"Clearwater"},"TANESF":{"Subbasin":"Upper Yakima"},"TANEUC":{"Subbasin":"Upper Yakima"},"TANNEC":{"Subbasin":"Lower Columbia-Sandy"},"TDA":{"Subbasin":"Middle Columbia-Hood"},"TDAICE":{"Subbasin":"Middle Columbia-Hood"},"TDAMRT":{"Subbasin":"Middle Columbia-Hood"},"TDASPF":{"Subbasin":"Middle Columbia-Hood"},"TDASPL":{"Subbasin":"Middle Columbia-Hood"},"TDASPT":{"Subbasin":"Middle Columbia-Hood"},"TDATAL":{"Subbasin":"Middle Columbia-Hood"},"TDATRB":{"Subbasin":"Middle Columbia-Hood"},"TEANAR":{"Subbasin":"Upper Yakima"},"TEANMF":{"Subbasin":"Lower Yakima"},"TEANWF":{"Subbasin":"Lower Yakima"},"TENMC2":{"Subbasin":"Lower Snake-Asotin"},"TENMIC":{"Subbasin":"South Fork Clearwater"},"TENNAI":{"Subbasin":"Lower Columbia-Clatskanie"},"TEPEEC":{"Subbasin":"Klickitat"},"TEPEEF":{"Subbasin":"Klickitat"},"TEXASC":{"Subbasin":"Lemhi"},"TEXC":{"Subbasin":"Upper John Day"},"THOMC":{"Subbasin":"Umatilla"},"THOP":{"Subbasin":"Umatilla"},"TIETNR":{"Subbasin":"Naches"},"TILLIC":{"Subbasin":"Upper Columbia-Entiat"},"TMF":{"Subbasin":"Umatilla"},"TMFFBY":{"Subbasin":"Umatilla"},"TMFTAL":{"Subbasin":"Umatilla"},"TONASC":{"Subbasin":"Okanogan"},"TOPPEC":{"Subbasin":"Lower Yakima"},"TOUCHR":{"Subbasin":"Walla Walla"},"TOULOU":{"Subbasin":"Kettle"},"TOUT":{"Subbasin":"Lower Cowlitz"},"TOUTLR":{"Subbasin":"Lower Cowlitz"},"TOUTNF":{"Subbasin":"Lower Cowlitz"},"TOWERC":{"Subbasin":"Middle Salmon-Panther"},"TRAILC":{"Subbasin":"Lemhi"},"TRINR":{"Subbasin":"Trinity"},"TRONC":{"Subbasin":"Wenatchee"},"TROU2C":{"Subbasin":"Trout"},"TROUTC":{"Subbasin":"Middle Columbia-Hood"},"TRYOC":{"Subbasin":"Lower Willamette"},"TSHIMC":{"Subbasin":"Lower Spokane"},"TSUGCR":{"Subbasin":"Lewis"},"TUCH":{"Subbasin":"Lower Snake-Tucannon"},"TUCR":{"Subbasin":"Lower Snake-Tucannon"},"TUM":{"Subbasin":"Wenatchee"},"TUMFBY":{"Subbasin":"Wenatchee"},"TUNKC":{"Subbasin":"Okanogan"},"TURNCR":{"Subbasin":"Lower Cowlitz"},"TURO":{"Subbasin":"Upper Columbia-Entiat"},"TUTUIC":{"Subbasin":"Umatilla"},"TWIS2P":{"Subbasin":"Methow"},"TWISPP":{"Subbasin":"Methow"},"TWISPR":{"Subbasin":"Methow"},"TWISPW":{"Subbasin":"Methow"},"TWITRP":{"Subbasin":"Methow"},"TWNMIC":{"Subbasin":"South Fork Clearwater"},"TWNMIT":{"Subbasin":"South Fork Clearwater"},"UKNWRC":{"Subbasin":"Upper Klamath Lake"},"UMAH":{"Subbasin":"Middle Columbia-Lake Wallula"},"UMAR":{"Subbasin":"Umatilla"},"UMATNF":{"Subbasin":"Umatilla"},"UMATSF":{"Subbasin":"Umatilla"},"UMPQAR":{"Subbasin":"Umpqua"},"UMTANC":{"Subbasin":"Upper Yakima"},"UWH":{"Subbasin":"Lake Washington"},"VALEYC":{"Subbasin":"Upper Salmon"},"VATC":{"Subbasin":"Upper Salmon"},"VDS3":{"Subbasin":"Okanogan"},"VGISNB":{"Subbasin":"Lower Yakima"},"VIENTC":{"Subbasin":"Middle Columbia-Hood"},"VNGRC":{"Subbasin":"Middle Fork John Day"},"WAHA":{"Subbasin":"Lower Columbia-Sandy"},"WALH":{"Subbasin":"Wallowa"},"WALLAR":{"Subbasin":"Walla Walla"},"WALLIS":{"Subbasin":"Lower Columbia-Clatskanie"},"WALLNF":{"Subbasin":"Walla Walla"},"WALLOR":{"Subbasin":"Wallowa"},"WALLSF":{"Subbasin":"Walla Walla"},"WAN":{"Subbasin":"Upper Columbia-Entiat"},"WANACC":{"Subbasin":"Okanogan"},"WANBYP":{"Subbasin":"Upper Columbia-Entiat"},"WANFBY":{"Subbasin":"Upper Columbia-Entiat"},"WANGWL":{"Subbasin":"Upper Columbia-Entiat"},"WANLD1":{"Subbasin":"Upper Columbia-Entiat"},"WANLD2":{"Subbasin":"Upper Columbia-Entiat"},"WANMRT":{"Subbasin":"Upper Columbia-Entiat"},"WANSPL":{"Subbasin":"Upper Columbia-Entiat"},"WANTAL":{"Subbasin":"Upper Columbia-Entiat"},"WANTRB":{"Subbasin":"Upper Columbia-Entiat"},"WAP":{"Subbasin":"Lower Yakima"},"WAPATC":{"Subbasin":"Lower Yakima"},"WAPATD":{"Subbasin":"Lower Yakima"},"WAPATS":{"Subbasin":"Lower Yakima"},"WAPSRR":{"Subbasin":"Lower Yakima"},"WAPTAL":{"Subbasin":"Lower Yakima"},"WARMSC":{"Subbasin":"Lochsa"},"WARMSR":{"Subbasin":"Lower Deschutes"},"WASHOR":{"Subbasin":"Lower Columbia-Sandy"},"WASHWF":{"Subbasin":"Lower Columbia-Sandy"},"WBIRDC":{"Subbasin":"Lower Salmon"},"WEBBC":{"Subbasin":"Clearwater"},"WEL":{"Subbasin":"Chief Joseph"},"WELFBY":{"Subbasin":"Chief Joseph"},"WELH":{"Subbasin":"Chief Joseph"},"WELLD1":{"Subbasin":"Chief Joseph"},"WELLD2":{"Subbasin":"Chief Joseph"},"WELSBR":{"Subbasin":"Chief Joseph"},"WELTAL":{"Subbasin":"Chief Joseph"},"WENA2T":{"Subbasin":"Wenatchee"},"WENA3T":{"Subbasin":"Wenatchee"},"WENA4T":{"Subbasin":"Wenatchee"},"WENASC":{"Subbasin":"Upper Yakima"},"WENATL":{"Subbasin":"Wenatchee"},"WENATR":{"Subbasin":"Wenatchee"},"WENATT":{"Subbasin":"Wenatchee"},"WENR":{"Subbasin":"Lower Grande Ronde"},"WENRNF":{"Subbasin":"Lower Grande Ronde"},"WENRSF":{"Subbasin":"Lower Grande Ronde"},"WHEELC":{"Subbasin":"Klickitat"},"WHITCC":{"Subbasin":"Upper Selway"},"WHITEC":{"Subbasin":"Klickitat"},"WHITER":{"Subbasin":"Wenatchee"},"WHITPC":{"Subbasin":"Wenatchee"},"WHITSC":{"Subbasin":"Lochsa"},"WHITSR":{"Subbasin":"Middle Columbia-Hood"},"WHITWF":{"Subbasin":"Klickitat"},"WHSH":{"Subbasin":"Lower Columbia"},"WIDOWC":{"Subbasin":"Lower John Day"},"WILD2C":{"Subbasin":"Naches"},"WILDCC":{"Subbasin":"Lemhi"},"WILDSC":{"Subbasin":"Okanogan"},"WILH":{"Subbasin":"Middle Fork Willamette"},"WILL":{"Subbasin":"Middle Columbia-Hood"},"WILL2C":{"Subbasin":"Upper Yakima"},"WILLIC":{"Subbasin":"Upper Salmon"},"WILLR":{"Subbasin":""},"WILLR1":{"Subbasin":"Lower Willamette"},"WILLR2":{"Subbasin":"Middle Willamette"},"WILLR3":{"Subbasin":"Upper Willamette"},"WILMOC":{"Subbasin":"Franklin D. Roosevelt Lake"},"WILPB":{"Subbasin":"Willapa Bay"},"WILRMF":{"Subbasin":"Middle Fork Willamette"},"WILSN2":{"Subbasin":"Colville"},"WILSNC":{"Subbasin":"Upper Yakima"},"WILSOC":{"Subbasin":"Lower Middle Fork Salmon"},"WIMPYC":{"Subbasin":"Lemhi"},"WIND2R":{"Subbasin":"Middle Columbia-Hood"},"WINDR":{"Subbasin":"Middle Salmon-Chamberlain"},"WINT":{"Subbasin":"Methow"},"WINTBC":{"Subbasin":"Methow"},"WITHGC":{"Subbasin":"Lemhi"},"WOLFC":{"Subbasin":"Methow"},"WOODIS":{"Subbasin":"Lower Columbia"},"WOPTXD":{"Subbasin":"Naches"},"WPX":{"Subbasin":"Naches"},"WPXTAL":{"Subbasin":"Naches"},"WRIGTC":{"Subbasin":"Lemhi"},"WRNFMF":{"Subbasin":"Middle Fork Willamette"},"WSPH":{"Subbasin":"Lower Deschutes"},"WYCHUC":{"Subbasin":"Upper Deschutes"},"WZDF":{"Subbasin":"Upper Deschutes"},"YAKIM1":{"Subbasin":"Lower Yakima"},"YAKIM2":{"Subbasin":"Upper Yakima"},"YAKIMR":{"Subbasin":""},"YANKFK":{"Subbasin":"Upper Salmon"},"YANKWF":{"Subbasin":"Upper Salmon"},"YELHKC":{"Subbasin":"Walla Walla"},"YELLJC":{"Subbasin":"Lower Middle Fork Salmon"},"YELLLC":{"Subbasin":"Upper Salmon"},"YOUNGB":{"Subbasin":"Lower Columbia"},"YPPL":{"Subbasin":"South Fork Salmon"},"YRIANC":{"Subbasin":"Lemhi"},"ZENAC":{"Subbasin":"South Fork Salmon"},"ZENAWF":{"Subbasin":"South Fork Salmon"}} 
+</script>
+</html>
